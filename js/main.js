@@ -122,4 +122,32 @@ document.addEventListener('DOMContentLoaded', () => {
 
   window.addEventListener('scroll', updateHeader, { passive: true });
   updateHeader();
+
+  // ── BGM Toggle (YouTube start at 44s) ──
+  const bgmToggle = document.getElementById('bgmToggle');
+  const bgmPlayerWrap = document.getElementById('bgmPlayerWrap');
+  const bgmPlayer = document.getElementById('bgmPlayer');
+
+  if (bgmToggle && bgmPlayerWrap && bgmPlayer) {
+    const bgmUrl = 'https://www.youtube.com/embed/n4tK7LYFxI0?start=44&autoplay=1&loop=1&playlist=n4tK7LYFxI0';
+    let isPlaying = false;
+
+    bgmToggle.addEventListener('click', () => {
+      if (!isPlaying) {
+        bgmPlayer.src = bgmUrl;
+        bgmPlayerWrap.hidden = false;
+        bgmToggle.setAttribute('aria-expanded', 'true');
+        bgmToggle.querySelector('.link-label').textContent = 'BGM 停止';
+        bgmToggle.querySelector('.link-arrow').innerHTML = '<i class="fas fa-stop"></i>';
+        isPlaying = true;
+      } else {
+        bgmPlayer.src = '';
+        bgmPlayerWrap.hidden = true;
+        bgmToggle.setAttribute('aria-expanded', 'false');
+        bgmToggle.querySelector('.link-label').textContent = 'BGM 再生（44秒〜）';
+        bgmToggle.querySelector('.link-arrow').innerHTML = '<i class="fas fa-play"></i>';
+        isPlaying = false;
+      }
+    });
+  }
 });

@@ -244,6 +244,19 @@
           <a href="mailto:naoya.ado1dem@gmail.com" class="link-card">
             <i class="fas fa-envelope link-icon"></i><span class="link-label">Email</span><span class="link-arrow"><i class="fas fa-arrow-right"></i></span>
           </a>
+          <button type="button" class="link-card link-card-button" id="bgmToggle" aria-expanded="false">
+            <i class="fas fa-music link-icon"></i><span class="link-label">BGM 再生（44秒〜）</span><span class="link-arrow"><i class="fas fa-play"></i></span>
+          </button>
+        </div>
+        <div class="bgm-player-wrap" id="bgmPlayerWrap" hidden>
+          <iframe
+            id="bgmPlayer"
+            title="BGM Player"
+            loading="lazy"
+            referrerpolicy="strict-origin-when-cross-origin"
+            allow="autoplay; encrypted-media; picture-in-picture"
+            allowfullscreen
+          ></iframe>
         </div>
       </div>
     </section>

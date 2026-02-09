@@ -861,11 +861,33 @@ ul {
 }
 
 .link-card:hover { transform: translateY(-2px); border-color: var(--border-hover); }
+.link-card-button {
+  width: 100%;
+  text-align: left;
+  color: var(--text);
+  font-family: inherit;
+  cursor: pointer;
+}
 
 .link-icon { font-size: 20px; color: var(--text-sub); width: 24px; text-align: center; }
 .link-label { font-family: var(--font-en); font-size: 14px; font-weight: 500; flex: 1; letter-spacing: 0.04em; }
 .link-arrow { font-size: 13px; color: var(--text-sub); transition: transform var(--transition); }
 .link-card:hover .link-arrow { transform: translateX(3px); }
+
+.bgm-player-wrap {
+  margin-top: 12px;
+  border-radius: var(--radius);
+  overflow: hidden;
+  border: 1px solid var(--border);
+  background: rgba(255,255,255,0.02);
+}
+
+.bgm-player-wrap iframe {
+  width: 100%;
+  height: 210px;
+  border: 0;
+  display: block;
+}
 
 /* ============================
    Contact

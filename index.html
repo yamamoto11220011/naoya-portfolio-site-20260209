@@ -127,19 +127,20 @@
                 <i class="fas fa-robot"></i>
               </div>
               <div class="chat-bubble">
-                <p>こんにちは！山本直哉についてのご質問にお答えします。<br>例えば「何を作っているの？」「強みは？」「どんな経歴？」など、何でもどうぞ！</p>
+                <p>こんにちは！下の候補から選んで質問してください。<br>このチャットは登録済みデータから回答します。</p>
               </div>
             </div>
           </div>
           <div class="chat-input-area">
+            <p class="chat-selection-note">この中から選んでください：</p>
             <div class="chat-suggestions" id="chatSuggestions">
-              <button class="suggestion-chip" data-query="どんなスキルがある？">💡 スキルは？</button>
-              <button class="suggestion-chip" data-query="いま何に注力している？">🔥 いま注力してること</button>
-              <button class="suggestion-chip" data-query="どんな実績がある？">🏆 実績を教えて</button>
-              <button class="suggestion-chip" data-query="仕事を依頼できる？">📩 依頼について</button>
+              <button class="suggestion-chip" data-query="山本直哉とは？">👤 山本直哉とは？</button>
+              <button class="suggestion-chip" data-query="好きなyoutuberは？">🎬 好きなYouTuberは？</button>
+              <button class="suggestion-chip" data-query="西村博之とはどんな関係ですか？">🤝 西村博之との関係</button>
+              <button class="suggestion-chip" data-query="AGIは来ますか？">🧠 AGIは来ますか？</button>
             </div>
             <form class="chat-form" id="chatForm">
-              <input type="text" class="chat-input" id="chatInput" placeholder="質問を入力..." autocomplete="off">
+              <input type="text" class="chat-input" id="chatInput" placeholder="上の候補から選ぶと確実です" autocomplete="off">
               <button type="submit" class="chat-send" id="chatSend" aria-label="送信">
                 <i class="fas fa-paper-plane"></i>
               </button>

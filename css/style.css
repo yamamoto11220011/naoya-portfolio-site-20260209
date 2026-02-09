@@ -649,6 +649,12 @@ ul {
   padding: 12px 16px 16px;
 }
 
+.chat-selection-note {
+  font-size: 12px;
+  color: var(--text-sub);
+  margin-bottom: 8px;
+}
+
 .chat-suggestions {
   display: flex;
   gap: 8px;

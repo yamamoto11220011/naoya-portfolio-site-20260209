@@ -124,11 +124,6 @@ async function handleSend() {
   const message = chatInput.value.trim();
   if (!message) return;
 
-  // サジェスチョンを非表示
-  if (chatSuggestions) {
-    chatSuggestions.style.display = 'none';
-  }
-
   // ユーザーメッセージ追加
   appendMessage(message, 'user');
   chatInput.value = '';

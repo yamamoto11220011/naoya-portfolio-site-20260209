@@ -2,28 +2,68 @@
    Gemini 2.5 Flash Chat - Naoya AI Assistant
    ============================ */
 
+const LANG_STORAGE_KEY = 'portfolio_lang';
+
 const QA_KNOWLEDGE = [
   {
+    key: 'profile',
     question: '山本直哉とは？',
-    answer: '山本直哉は、東京生まれで中学まで東京で過ごし、高校から香川西高校の特待生として野球部に所属していました。',
     keywords: ['山本直哉', '東京', '香川西高校', '特待生', '野球部']
   },
   {
+    key: 'youtuber',
     question: '好きなyoutuberは？',
-    answer: '好きなYouTuberは、コスメティック田中です。',
     keywords: ['youtuber', 'ユーチューバー', 'youtube', 'コスメティック田中']
   },
   {
+    key: 'relation',
     question: '西村博之とはどんな関係ですか？',
-    answer: '西村博之さんとは、ZEN大学1期生としての同級生という関係です。',
     keywords: ['西村博之', 'ひろゆき', '関係', 'zen大学', '同級生']
   },
   {
+    key: 'agi',
     question: 'AGIは来ますか？',
-    answer: 'AGIについては「もう来てます」という認識です。',
     keywords: ['agi', '来ますか', '人工汎用知能']
   }
 ];
+
+const QA_ANSWERS = {
+  ja: {
+    profile: '山本直哉は、東京生まれで中学まで東京で過ごし、高校から香川西高校の特待生として野球部に所属していました。',
+    youtuber: '好きなYouTuberは、コスメティック田中です。',
+    relation: '西村博之さんとは、ZEN大学1期生としての同級生という関係です。',
+    agi: 'AGIについては「もう来てます」という認識です。',
+    fallback: 'その質問はデータにないため答えられません。候補から選んでください。'
+  },
+  en: {
+    profile: 'Naoya Yamamoto was born in Tokyo, lived there through middle school, then joined Kagawa Nishi High School baseball team as a scholarship student.',
+    youtuber: 'Favorite YouTuber: Cosmetic Tanaka.',
+    relation: 'He and Hiroyuki Nishimura are classmates as first-year students at ZEN University.',
+    agi: 'About AGI: "It is already here."',
+    fallback: 'That question is outside this dataset. Please choose from the provided options.'
+  },
+  id: {
+    profile: 'Naoya Yamamoto lahir di Tokyo, tinggal di Tokyo hingga SMP, lalu masuk tim baseball SMA Kagawa Nishi sebagai siswa beasiswa.',
+    youtuber: 'YouTuber favorit: Cosmetic Tanaka.',
+    relation: 'Dengan Hiroyuki Nishimura, hubungannya adalah teman seangkatan sebagai mahasiswa angkatan pertama ZEN University.',
+    agi: 'Tentang AGI: "Sudah datang."',
+    fallback: 'Pertanyaan itu tidak ada di dataset ini. Silakan pilih dari opsi yang tersedia.'
+  },
+  zh: {
+    profile: '山本直哉出生于东京，中学前一直在东京生活，高中以特待生身份加入香川西高中棒球部。',
+    youtuber: '喜欢的 YouTuber 是 Cosmetic Tanaka。',
+    relation: '与西村博之的关系：作为 ZEN 大学第一期学生的同学。',
+    agi: '关于 AGI：“已经来了。”',
+    fallback: '这个问题不在数据范围内，请从候选项中选择。'
+  },
+  ko: {
+    profile: '야마모토 나오야는 도쿄 출생이며 중학교까지 도쿄에서 지냈고, 고등학교부터 가가와니시고 야구부 특기생으로 활동했습니다.',
+    youtuber: '좋아하는 유튜버는 코스메틱 타나카입니다.',
+    relation: '니시무라 히로유키와의 관계는 ZEN대학 1기 동기입니다.',
+    agi: 'AGI에 대해서는 "이미 왔다"는 인식입니다.',
+    fallback: '해당 질문은 데이터 범위를 벗어납니다. 제공된 선택지에서 골라주세요.'
+  }
+};
 
 const EMBEDDING_MIN_SCORE = 0.22;
 
@@ -100,15 +140,16 @@ if (chatSuggestions) {
   chatSuggestions.querySelectorAll('.suggestion-chip').forEach(chip => {
     chip.addEventListener('click', () => {
       const query = chip.getAttribute('data-query');
+      const selectedKey = chip.getAttribute('data-key') || '';
       if (query) {
-        handleSend(query);
+        handleSend(chip.textContent.trim(), selectedKey, query);
       }
     });
   });
 }
 
 // ── 送信処理 ──
-async function handleSend(selectedMessage) {
+async function handleSend(selectedMessage, selectedKey = '', lookupText = '') {
   const message = String(selectedMessage || '').trim();
   if (!message) return;
 
@@ -119,7 +160,7 @@ async function handleSend(selectedMessage) {
   const typingEl = appendTyping();
 
   try {
-    const response = await callEmbeddingAssistant(message);
+    const response = await callEmbeddingAssistant(lookupText || message, selectedKey);
     typingEl.remove();
     appendMessage(response, 'ai');
   } catch (error) {
@@ -130,16 +171,20 @@ async function handleSend(selectedMessage) {
 }
 
 // ── 埋め込み（簡易ベクトル）ベース回答 ──
-async function callEmbeddingAssistant(userMessage) {
+async function callEmbeddingAssistant(userMessage, selectedKey = '') {
   // 履歴に追加
   chatHistory.push({
     role: 'user',
     parts: [{ text: userMessage }]
   });
-  const best = findBestKnowledge(userMessage);
-  const aiText = best && best.score >= EMBEDDING_MIN_SCORE
-    ? best.entry.answer
-    : 'その質問はデータにないため答えられません。山本直哉・好きなYouTuber・西村博之さんとの関係・AGIについて質問してください。';
+  const lang = localStorage.getItem(LANG_STORAGE_KEY) || 'ja';
+  const dict = QA_ANSWERS[lang] || QA_ANSWERS.ja;
+  let hitKey = selectedKey;
+  if (!hitKey) {
+    const best = findBestKnowledge(userMessage);
+    if (best && best.score >= EMBEDDING_MIN_SCORE) hitKey = best.entry.key;
+  }
+  const aiText = (hitKey && dict[hitKey]) ? dict[hitKey] : dict.fallback;
 
   // 履歴に追加
   chatHistory.push({

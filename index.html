@@ -81,9 +81,9 @@
           <span class="splash-line">IS</span>
           <span class="splash-line splash-god">GOD</span>
         </h1>
-        <p class="splash-sub">Artificial Intelligence changes everything.</p>
+        <p class="splash-sub" data-i18n="splash_sub">Artificial Intelligence changes everything.</p>
         <a href="#hero" class="splash-scroll">
-          <span>ENTER</span>
+          <span data-i18n="splash_enter">ENTER</span>
           <i class="fas fa-chevron-down"></i>
         </a>
       </div>
@@ -102,18 +102,18 @@
               <p class="hero-name-en">Naoya Yamamoto</p>
             </div>
           </div>
-          <p class="hero-titles">
+          <p class="hero-titles" data-i18n="hero_titles">
             ZEN大学 ｜ Google 学生AIアンバサダー ｜ NewsPicks アンバサダー ｜ 積水グループアンバサダー
           </p>
-          <h3 class="hero-catch">AIと自動化で、やりたい<br class="sp-only">ことを最短で形にする。</h3>
-          <p class="hero-lead">
+          <h3 class="hero-catch" data-i18n-html="hero_catch">AIと自動化で、やりたい<br class="sp-only">ことを最短で形にする。</h3>
+          <p class="hero-lead" data-i18n="hero_lead">
             AI秘書や業務自動化ツールの試作からWebサイト制作まで、プロトタイプを高速で回して実装します。
           </p>
           <div class="hero-buttons">
-            <a href="#contact" class="btn btn-primary">コラボ・相談する</a>
-            <a href="#works" class="btn btn-secondary">実績を見る</a>
+            <a href="#contact" class="btn btn-primary" data-i18n="hero_btn_contact">コラボ・相談する</a>
+            <a href="#works" class="btn btn-secondary" data-i18n="hero_btn_works">実績を見る</a>
           </div>
-          <p class="hero-note">企画→実装→改善までを短いサイクルで回せます。</p>
+          <p class="hero-note" data-i18n="hero_note">企画→実装→改善までを短いサイクルで回せます。</p>
         </div>
       </div>
     </section>
@@ -123,9 +123,9 @@
       <div class="container">
         <h2 class="section-title">
           <i class="fas fa-robot" style="color: var(--accent); margin-right: 8px; font-size: 20px;"></i>
-          Ask AI about Naoya
+          <span data-i18n="chat_title">Ask AI about Naoya</span>
         </h2>
-        <p class="section-subtitle">山本直哉について何でも聞いてください。AIが回答します。</p>
+        <p class="section-subtitle" data-i18n="chat_subtitle">山本直哉について何でも聞いてください。AIが回答します。</p>
 
         <div class="chat-container" id="chatContainer">
           <div class="chat-messages" id="chatMessages">
@@ -134,17 +134,17 @@
                 <i class="fas fa-robot"></i>
               </div>
               <div class="chat-bubble">
-                <p>こんにちは！下の候補から選んで質問してください。<br>このチャットは登録済みデータから回答します。</p>
+                <p data-i18n-html="chat_intro">こんにちは！下の候補から選んで質問してください。<br>このチャットは登録済みデータから回答します。</p>
               </div>
             </div>
           </div>
           <div class="chat-input-area">
-            <p class="chat-selection-note">この中から選んでください：<span class="chat-selection-version">v2026-02-09-1458</span></p>
+            <p class="chat-selection-note"><span data-i18n="chat_select_note">この中から選んでください：</span><span class="chat-selection-version">v2026-02-09-1458</span></p>
             <div class="chat-suggestions" id="chatSuggestions">
-              <button class="suggestion-chip" data-query="山本直哉とは？">👤 山本直哉とは？</button>
-              <button class="suggestion-chip" data-query="好きなyoutuberは？">🎬 好きなYouTuberは？</button>
-              <button class="suggestion-chip" data-query="西村博之とはどんな関係ですか？">🤝 西村博之との関係</button>
-              <button class="suggestion-chip" data-query="AGIは来ますか？">🧠 AGIは来ますか？</button>
+              <button class="suggestion-chip" data-key="profile" data-query="山本直哉とは？" data-i18n="chip_1">👤 山本直哉とは？</button>
+              <button class="suggestion-chip" data-key="youtuber" data-query="好きなyoutuberは？" data-i18n="chip_2">🎬 好きなYouTuberは？</button>
+              <button class="suggestion-chip" data-key="relation" data-query="西村博之とはどんな関係ですか？" data-i18n="chip_3">🤝 西村博之との関係</button>
+              <button class="suggestion-chip" data-key="agi" data-query="AGIは来ますか？" data-i18n="chip_4">🧠 AGIは来ますか？</button>
             </div>
           </div>
         </div>
@@ -154,35 +154,35 @@
     <!-- ===== ABOUT ===== -->
     <section class="section section-alt" id="about">
       <div class="container">
-        <h2 class="section-title">About</h2>
-        <p class="section-subtitle">AIネイティブ世代で、とにかくAIツールを触るのが好き。</p>
+        <h2 class="section-title" data-i18n="about_title">About</h2>
+        <p class="section-subtitle" data-i18n="about_subtitle">AIネイティブ世代で、とにかくAIツールを触るのが好き。</p>
         <div class="about-body">
-          <p>AIが好きという原動力を活かし、日々の学習と制作を加速させています。強みは、情報収集から整理、そして実装までのサイクルを短期間で回せることです。</p>
-          <p>現在は、AI秘書のようなエージェント機能を持つ自動化ツールや、誰でも更新可能なWebサイトの仕組みづくりに注力しています。</p>
-          <p>長期的には、汎用人工知能に近づく技術やプロダクトの実装に携わり続けることを目標としています。</p>
+          <p data-i18n="about_p1">AIが好きという原動力を活かし、日々の学習と制作を加速させています。強みは、情報収集から整理、そして実装までのサイクルを短期間で回せることです。</p>
+          <p data-i18n="about_p2">現在は、AI秘書のようなエージェント機能を持つ自動化ツールや、誰でも更新可能なWebサイトの仕組みづくりに注力しています。</p>
+          <p data-i18n="about_p3">長期的には、汎用人工知能に近づく技術やプロダクトの実装に携わり続けることを目標としています。</p>
         </div>
         <div class="strengths">
-          <h3 class="strengths-heading">強み</h3>
+          <h3 class="strengths-heading" data-i18n="strengths_heading">強み</h3>
           <div class="strengths-list">
             <div class="strength-item">
               <span class="strength-icon"><i class="fas fa-search"></i></span>
               <div>
-                <p class="strength-text">情報収集→要点抽出→意思決定の整理</p>
-                <span class="tag">リサーチ</span><span class="tag">分析</span>
+                <p class="strength-text" data-i18n="strength_1">情報収集→要点抽出→意思決定の整理</p>
+                <span class="tag" data-i18n="tag_research">リサーチ</span><span class="tag" data-i18n="tag_analysis">分析</span>
               </div>
             </div>
             <div class="strength-item">
               <span class="strength-icon"><i class="fas fa-cogs"></i></span>
               <div>
-                <p class="strength-text">自動化ツールの試作（ワークフロー/AI秘書系）</p>
-                <span class="tag">自動化</span><span class="tag">プロトタイピング</span>
+                <p class="strength-text" data-i18n="strength_2">自動化ツールの試作（ワークフロー/AI秘書系）</p>
+                <span class="tag" data-i18n="tag_automation">自動化</span><span class="tag" data-i18n="tag_proto">プロトタイピング</span>
               </div>
             </div>
             <div class="strength-item">
               <span class="strength-icon"><i class="fas fa-code"></i></span>
               <div>
-                <p class="strength-text">Webサイト制作（実装→改善まで）</p>
-                <span class="tag">Web制作</span><span class="tag">改善</span>
+                <p class="strength-text" data-i18n="strength_3">Webサイト制作（実装→改善まで）</p>
+                <span class="tag" data-i18n="tag_web">Web制作</span><span class="tag" data-i18n="tag_improve">改善</span>
               </div>
             </div>
           </div>
@@ -193,35 +193,35 @@
     <!-- ===== WORKS ===== -->
     <section class="section" id="works">
       <div class="container">
-        <h2 class="section-title">Works / Projects</h2>
+        <h2 class="section-title" data-i18n="works_title">Works / Projects</h2>
         <div class="works-grid">
           <div class="work-card">
             <div class="work-card-header">
-              <h3 class="work-card-title">Google 学生AIアンバサダー</h3>
+              <h3 class="work-card-title" data-i18n="work1_title">Google 学生AIアンバサダー</h3>
             </div>
             <div class="work-card-body">
               <div class="work-meta">
-                <div class="work-meta-item"><span class="work-meta-label">役割</span><span class="work-meta-value">学生アンバサダー</span></div>
-                <div class="work-meta-item"><span class="work-meta-label">規模</span><span class="work-meta-value">70名規模</span></div>
+                <div class="work-meta-item"><span class="work-meta-label" data-i18n="work_label_role">役割</span><span class="work-meta-value" data-i18n="work1_role">学生アンバサダー</span></div>
+                <div class="work-meta-item"><span class="work-meta-label" data-i18n="work_label_scale">規模</span><span class="work-meta-value" data-i18n="work1_scale">70名規模</span></div>
               </div>
-              <p class="work-desc">イベント運営、参加者サポート、企画推進</p>
-              <p class="work-result"><i class="fas fa-check" style="color:var(--accent);margin-right:6px;font-size:12px;"></i>優秀評価を獲得</p>
+              <p class="work-desc" data-i18n="work1_desc">イベント運営、参加者サポート、企画推進</p>
+              <p class="work-result"><i class="fas fa-check" style="color:var(--accent);margin-right:6px;font-size:12px;"></i><span data-i18n="work1_result">優秀評価を獲得</span></p>
             </div>
-            <div class="work-card-footer"><span class="tag">企画</span><span class="tag">運営</span><span class="tag">コミュニティ</span></div>
+            <div class="work-card-footer"><span class="tag" data-i18n="tag_planning">企画</span><span class="tag" data-i18n="tag_ops">運営</span><span class="tag" data-i18n="tag_community">コミュニティ</span></div>
           </div>
           <div class="work-card">
             <div class="work-card-header">
-              <h3 class="work-card-title">AIサークル長（270名）</h3>
+              <h3 class="work-card-title" data-i18n="work2_title">AIサークル長（270名）</h3>
             </div>
             <div class="work-card-body">
               <div class="work-meta">
-                <div class="work-meta-item"><span class="work-meta-label">役割</span><span class="work-meta-value">代表／運営体制づくり</span></div>
-                <div class="work-meta-item"><span class="work-meta-label">規模</span><span class="work-meta-value">270名</span></div>
+                <div class="work-meta-item"><span class="work-meta-label" data-i18n="work_label_role">役割</span><span class="work-meta-value" data-i18n="work2_role">代表／運営体制づくり</span></div>
+                <div class="work-meta-item"><span class="work-meta-label" data-i18n="work_label_scale">規模</span><span class="work-meta-value" data-i18n="work2_scale">270名</span></div>
               </div>
-              <p class="work-desc">イベント企画運営、メンバー支援、運営フロー整備</p>
-              <p class="work-result"><i class="fas fa-check" style="color:var(--accent);margin-right:6px;font-size:12px;"></i>30人規模のオフライン・オンラインイベントを開催</p>
+              <p class="work-desc" data-i18n="work2_desc">イベント企画運営、メンバー支援、運営フロー整備</p>
+              <p class="work-result"><i class="fas fa-check" style="color:var(--accent);margin-right:6px;font-size:12px;"></i><span data-i18n="work2_result">30人規模のオフライン・オンラインイベントを開催</span></p>
             </div>
-            <div class="work-card-footer"><span class="tag">運営</span><span class="tag">仕組み化</span><span class="tag">コミュニティ</span></div>
+            <div class="work-card-footer"><span class="tag" data-i18n="tag_ops">運営</span><span class="tag" data-i18n="tag_systemize">仕組み化</span><span class="tag" data-i18n="tag_community">コミュニティ</span></div>
           </div>
         </div>
       </div>
@@ -230,26 +230,26 @@
     <!-- ===== NOW ===== -->
     <section class="section section-alt" id="now">
       <div class="container">
-        <h2 class="section-title">Now</h2>
+        <h2 class="section-title" data-i18n="now_title">Now</h2>
         <ul class="now-list">
-          <li class="now-item"><span class="now-check"><i class="fas fa-check"></i></span><span>AI秘書・自動化ツールの開発</span></li>
-          <li class="now-item"><span class="now-check"><i class="fas fa-check"></i></span><span>誰でも作れて更新できるサイト制作の仕組み化</span></li>
-          <li class="now-item"><span class="now-check"><i class="fas fa-check"></i></span><span>AI活用で学習と制作の速度を上げる</span></li>
+          <li class="now-item"><span class="now-check"><i class="fas fa-check"></i></span><span data-i18n="now_1">AI秘書・自動化ツールの開発</span></li>
+          <li class="now-item"><span class="now-check"><i class="fas fa-check"></i></span><span data-i18n="now_2">誰でも作れて更新できるサイト制作の仕組み化</span></li>
+          <li class="now-item"><span class="now-check"><i class="fas fa-check"></i></span><span data-i18n="now_3">AI活用で学習と制作の速度を上げる</span></li>
         </ul>
-        <p class="now-updated">最終更新：2026年2月9日</p>
+        <p class="now-updated" data-i18n="now_updated">最終更新：2026年2月9日</p>
       </div>
     </section>
 
     <!-- ===== LINKS ===== -->
     <section class="section" id="links">
       <div class="container">
-        <h2 class="section-title">Links</h2>
+        <h2 class="section-title" data-i18n="links_title">Links</h2>
         <div class="links-grid">
           <a href="https://github.com/" target="_blank" rel="noopener noreferrer" class="link-card">
             <i class="fab fa-github link-icon"></i><span class="link-label">GitHub</span><span class="link-arrow"><i class="fas fa-arrow-right"></i></span>
           </a>
           <a href="mailto:naoya.ado1dem@gmail.com" class="link-card">
-            <i class="fas fa-envelope link-icon"></i><span class="link-label">Email</span><span class="link-arrow"><i class="fas fa-arrow-right"></i></span>
+            <i class="fas fa-envelope link-icon"></i><span class="link-label" data-i18n="email_label">Email</span><span class="link-arrow"><i class="fas fa-arrow-right"></i></span>
           </a>
           <button type="button" class="link-card link-card-button" id="bgmToggle" aria-expanded="false">
             <i class="fas fa-music link-icon"></i><span class="link-label" data-i18n="bgm_play">BGM 再生（44秒〜）</span><span class="link-arrow"><i class="fas fa-play"></i></span>
@@ -271,21 +271,21 @@
     <!-- ===== CONTACT ===== -->
     <section class="section section-alt" id="contact">
       <div class="container">
-        <h2 class="section-title">Contact</h2>
-        <p class="contact-lead">相談内容が固まってなくても大丈夫です。<br>目的だけ教えてください。</p>
+        <h2 class="section-title" data-i18n="contact_title">Contact</h2>
+        <p class="contact-lead" data-i18n-html="contact_lead">相談内容が固まってなくても大丈夫です。<br>目的だけ教えてください。</p>
         <div class="contact-template">
           <div class="template-header">
-            <span class="template-label">依頼テンプレート</span>
-            <button class="copy-btn" id="copyBtn" aria-label="テンプレートをコピー"><i class="fas fa-copy"></i> コピー</button>
+            <span class="template-label" data-i18n="template_label">依頼テンプレート</span>
+            <button class="copy-btn" id="copyBtn" aria-label="テンプレートをコピー"><i class="fas fa-copy"></i> <span data-i18n="copy_btn">コピー</span></button>
           </div>
-          <pre class="template-body" id="templateBody">目的：
+          <pre class="template-body" id="templateBody" data-i18n="template_body">目的：
 依頼内容：
 希望納期：
 予算感（任意）：
 連絡手段：</pre>
         </div>
         <a href="mailto:naoya.ado1dem@gmail.com?subject=相談・依頼&body=%E7%9B%AE%E7%9A%84%EF%BC%9A%0A%E4%BE%9D%E9%A0%BC%E5%86%85%E5%AE%B9%EF%BC%9A%0A%E5%B8%8C%E6%9C%9B%E7%B4%8D%E6%9C%9F%EF%BC%9A%0A%E4%BA%88%E7%AE%97%E6%84%9F%EF%BC%88%E4%BB%BB%E6%84%8F%EF%BC%89%EF%BC%9A%0A%E9%80%A3%E7%B5%A1%E6%89%8B%E6%AE%B5%EF%BC%9A" class="btn btn-primary contact-btn">
-          <i class="fas fa-envelope"></i> メールで相談する
+          <i class="fas fa-envelope"></i> <span data-i18n="contact_btn">メールで相談する</span>
         </a>
       </div>
     </section>
@@ -294,7 +294,7 @@
 
   <!-- ===== FOOTER ===== -->
   <footer class="footer">
-    <p class="footer-message">AIネイティブ世代として、日本の生産性を上げるプロトタイプを作り続ける。</p>
+    <p class="footer-message" data-i18n="footer_message">AIネイティブ世代として、日本の生産性を上げるプロトタイプを作り続ける。</p>
     <p class="footer-copy">&copy; 2026 山本 直哉</p>
   </footer>
 

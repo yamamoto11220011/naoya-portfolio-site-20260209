@@ -418,8 +418,18 @@ document.addEventListener('DOMContentLoaded', () => {
   const openingEnter = document.getElementById('openingEnter');
   const homeSection = document.getElementById('hero');
   const openingSeenKey = 'opening_seen_v2026_02_09';
+  const OPENING_FORCE_HIDDEN_CLASS = 'is-force-hidden';
   let openingTimer = null;
   let openingClosed = false;
+
+  function hideOpeningElementImmediately() {
+    if (!openingCinematic) return;
+    openingCinematic.classList.remove('is-leaving');
+    openingCinematic.classList.add(OPENING_FORCE_HIDDEN_CLASS);
+    openingCinematic.hidden = true;
+    openingCinematic.style.display = 'none';
+    openingCinematic.setAttribute('aria-hidden', 'true');
+  }
 
   function closeOpening(immediate = false) {
     if (openingClosed) return;
@@ -430,7 +440,7 @@ document.addEventListener('DOMContentLoaded', () => {
     if (!openingCinematic) return;
 
     if (immediate) {
-      openingCinematic.hidden = true;
+      hideOpeningElementImmediately();
       return;
     }
 
@@ -453,6 +463,21 @@ document.addEventListener('DOMContentLoaded', () => {
     }
   }
 
+  function forceHideOpeningNow() {
+    hideOpeningElementImmediately();
+  }
+
+  if (openingEnter) {
+    openingEnter.addEventListener('click', (event) => {
+      event.preventDefault();
+      event.stopPropagation();
+      if (openingTimer) window.clearTimeout(openingTimer);
+      forceHideOpeningNow();
+      closeOpening(true);
+      moveToHomeSection();
+    });
+  }
+
   if (openingCinematic) {
     const seenBefore = localStorage.getItem(openingSeenKey) === '1';
     if (prefersReducedMotion || seenBefore) {
@@ -460,13 +485,6 @@ document.addEventListener('DOMContentLoaded', () => {
     } else {
       openingCinematic.classList.add('is-intense');
       openingTimer = window.setTimeout(() => closeOpening(false), 3000);
-      if (openingEnter) {
-        openingEnter.addEventListener('click', () => {
-          if (openingTimer) window.clearTimeout(openingTimer);
-          closeOpening(true);
-          moveToHomeSection();
-        });
-      }
       openingCinematic.addEventListener('click', (event) => {
         if (event.target === openingCinematic) {
           if (openingTimer) window.clearTimeout(openingTimer);

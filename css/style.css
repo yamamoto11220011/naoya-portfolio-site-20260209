@@ -203,6 +203,13 @@ ul {
   visibility: hidden;
 }
 
+.opening-cinematic.is-force-hidden {
+  display: none !important;
+  opacity: 0 !important;
+  visibility: hidden !important;
+  pointer-events: none !important;
+}
+
 .opening-grid {
   position: absolute;
   inset: 0;

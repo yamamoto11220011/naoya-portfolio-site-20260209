@@ -416,6 +416,7 @@ document.addEventListener('DOMContentLoaded', () => {
   // ── Opening Cinematic ──
   const openingCinematic = document.getElementById('openingCinematic');
   const openingEnter = document.getElementById('openingEnter');
+  const homeSection = document.getElementById('hero');
   const openingSeenKey = 'opening_seen_v2026_02_09';
   let openingTimer = null;
   let openingClosed = false;
@@ -439,6 +440,19 @@ document.addEventListener('DOMContentLoaded', () => {
     }, 950);
   }
 
+  function moveToHomeSection() {
+    if (!homeSection) return;
+    homeSection.scrollIntoView({
+      behavior: prefersReducedMotion ? 'auto' : 'smooth',
+      block: 'start'
+    });
+    if (window.history && typeof window.history.replaceState === 'function') {
+      window.history.replaceState(null, '', '#hero');
+    } else {
+      window.location.hash = 'hero';
+    }
+  }
+
   if (openingCinematic) {
     const seenBefore = localStorage.getItem(openingSeenKey) === '1';
     if (prefersReducedMotion || seenBefore) {
@@ -450,6 +464,9 @@ document.addEventListener('DOMContentLoaded', () => {
         openingEnter.addEventListener('click', () => {
           if (openingTimer) window.clearTimeout(openingTimer);
           closeOpening(false);
+          window.setTimeout(() => {
+            moveToHomeSection();
+          }, prefersReducedMotion ? 0 : 120);
         });
       }
       openingCinematic.addEventListener('click', (event) => {

@@ -540,8 +540,11 @@ document.addEventListener('DOMContentLoaded', () => {
   const bgmPlayer = document.getElementById('bgmPlayer');
 
   if (bgmToggle && bgmPlayerWrap && bgmPlayer) {
-    const bgmUrl = 'https://www.youtube.com/embed/jK2aIUmmdP4?start=0&autoplay=1&loop=1&playlist=jK2aIUmmdP4&playsinline=1';
+    const videoId = 'jK2aIUmmdP4';
+    const bgmUrl = `https://www.youtube.com/embed/${videoId}?enablejsapi=1&start=0&autoplay=1&loop=1&playlist=${videoId}&playsinline=1`;
     let isPlaying = false;
+    let isStoppedByUser = false;
+    let player = null;
     const bgmLabel = bgmToggle.querySelector('.link-label');
     const bgmArrow = bgmToggle.querySelector('.link-arrow');
 
@@ -551,37 +554,123 @@ document.addEventListener('DOMContentLoaded', () => {
       if (bgmArrow) bgmArrow.innerHTML = playing ? '<i class="fas fa-stop"></i>' : '<i class="fas fa-play"></i>';
     }
 
+    function loadIframeSource(forceReload = false) {
+      if (forceReload) {
+        bgmPlayer.src = '';
+      }
+      if (bgmPlayer.src !== bgmUrl) {
+        bgmPlayer.src = bgmUrl;
+      }
+    }
+
     function startBgm() {
-      bgmPlayer.src = bgmUrl;
-      isPlaying = true;
-      setBgmUiState(true);
+      isStoppedByUser = false;
+      if (player && typeof player.playVideo === 'function') {
+        player.playVideo();
+      } else {
+        // YouTube API準備前でも、ユーザー操作時に確実に再試行させる
+        loadIframeSource(true);
+      }
     }
 
     function stopBgm() {
-      bgmPlayer.src = '';
+      isStoppedByUser = true;
+      if (player && typeof player.pauseVideo === 'function') {
+        player.pauseVideo();
+      } else {
+        bgmPlayer.src = '';
+      }
       isPlaying = false;
       setBgmUiState(false);
     }
 
-    // 背景再生用プレイヤーを常時ロード。自動再生はブラウザ仕様で失敗する場合あり。
-    bgmPlayerWrap.hidden = false;
-    startBgm();
+    function initYouTubePlayer() {
+      if (!window.YT || !window.YT.Player || player) return;
+      player = new window.YT.Player('bgmPlayer', {
+        videoId,
+        playerVars: {
+          autoplay: 1,
+          controls: 0,
+          disablekb: 1,
+          fs: 0,
+          iv_load_policy: 3,
+          loop: 1,
+          modestbranding: 1,
+          playsinline: 1,
+          rel: 0,
+          start: 0,
+          playlist: videoId
+        },
+        events: {
+          onReady: (event) => {
+            if (!isStoppedByUser) {
+              event.target.playVideo();
+            }
+          },
+          onStateChange: (event) => {
+            const state = event.data;
+            if (state === window.YT.PlayerState.PLAYING) {
+              isPlaying = true;
+              setBgmUiState(true);
+            } else if (state === window.YT.PlayerState.PAUSED || state === window.YT.PlayerState.ENDED) {
+              if (isStoppedByUser) {
+                isPlaying = false;
+                setBgmUiState(false);
+                return;
+              }
+              if (state === window.YT.PlayerState.ENDED) {
+                event.target.seekTo(0);
+                event.target.playVideo();
+              }
+            }
+          },
+          onError: () => {
+            isPlaying = false;
+            setBgmUiState(false);
+          }
+        }
+      });
+    }
 
-    // 自動再生がブロックされたケースを、最初のユーザー操作で確実に再試行
-    const bootstrapPlayback = () => {
-      if (isPlaying) {
-        bgmPlayer.src = '';
+    function ensureYouTubeApi() {
+      if (window.YT && window.YT.Player) {
+        initYouTubePlayer();
+        return;
       }
-      startBgm();
-      document.removeEventListener('pointerdown', bootstrapPlayback);
-      document.removeEventListener('keydown', bootstrapPlayback);
-      document.removeEventListener('touchstart', bootstrapPlayback);
+
+      const prevReady = window.onYouTubeIframeAPIReady;
+      window.onYouTubeIframeAPIReady = () => {
+        if (typeof prevReady === 'function') prevReady();
+        initYouTubePlayer();
+      };
+
+      if (document.querySelector('script[data-yt-api="true"]')) return;
+
+      const script = document.createElement('script');
+      script.src = 'https://www.youtube.com/iframe_api';
+      script.async = true;
+      script.dataset.ytApi = 'true';
+      document.head.appendChild(script);
+    }
+
+    // 背景再生用プレイヤーを常時ロード。音あり自動再生はブラウザ側でブロックされる場合がある。
+    bgmPlayerWrap.hidden = false;
+    loadIframeSource();
+    ensureYouTubeApi();
+    setBgmUiState(false);
+
+    // 初回ユーザー操作時に再生を再試行
+    const bootstrapPlayback = () => {
+      if (!isStoppedByUser) {
+        startBgm();
+      }
     };
     document.addEventListener('pointerdown', bootstrapPlayback, { once: true, passive: true });
     document.addEventListener('keydown', bootstrapPlayback, { once: true, passive: true });
     document.addEventListener('touchstart', bootstrapPlayback, { once: true, passive: true });
 
-    bgmToggle.addEventListener('click', () => {
+    bgmToggle.addEventListener('click', (event) => {
+      event.preventDefault();
       if (!isPlaying) {
         startBgm();
       } else {

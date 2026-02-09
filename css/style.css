@@ -1297,8 +1297,8 @@ ul {
 
 .bgm-player-wrap.bgm-background {
   position: fixed;
-  width: 1px;
-  height: 1px;
+  width: 220px;
+  height: 220px;
   left: -9999px;
   top: -9999px;
   margin: 0;

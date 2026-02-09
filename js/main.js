@@ -662,11 +662,30 @@ document.addEventListener('DOMContentLoaded', () => {
   const bgmPlayer = document.getElementById('bgmPlayer');
 
   if (bgmToggle && bgmPlayerWrap && bgmPlayer) {
-    const videoId = 'jK2aIUmmdP4';
+    const videoId = 'BSDPQ1uP7GI';
+    const listId = 'PLIYuJXGUx7wMpK3LWbiu0UdZq8tCri65f';
     const pageOrigin = window.location.origin;
     const hasValidOrigin = pageOrigin && pageOrigin !== 'null';
-    const originParam = hasValidOrigin ? `&origin=${encodeURIComponent(pageOrigin)}` : '';
-    const bgmUrl = `https://www.youtube.com/embed/${videoId}?enablejsapi=1&start=0&autoplay=1&loop=1&playlist=${videoId}&playsinline=1&mute=1${originParam}`;
+    const buildBgmUrl = (muted = true) => {
+      const params = new URLSearchParams({
+        enablejsapi: '1',
+        start: '0',
+        autoplay: '1',
+        loop: '1',
+        playsinline: '1',
+        controls: '0',
+        rel: '0',
+        modestbranding: '1',
+        iv_load_policy: '3',
+        playlist: videoId,
+        list: listId,
+        mute: muted ? '1' : '0'
+      });
+      if (hasValidOrigin) params.set('origin', pageOrigin);
+      return `https://www.youtube.com/embed/${videoId}?${params.toString()}`;
+    };
+    const bgmUrlMuted = buildBgmUrl(true);
+    const bgmUrlUnmuted = buildBgmUrl(false);
     let isPlaying = false;
     let isStoppedByUser = false;
     let hasUserGesture = false;
@@ -681,12 +700,13 @@ document.addEventListener('DOMContentLoaded', () => {
       if (bgmArrow) bgmArrow.innerHTML = playing ? '<i class="fas fa-stop"></i>' : '<i class="fas fa-play"></i>';
     }
 
-    function loadIframeSource(forceReload = false) {
+    function loadIframeSource(forceReload = false, muted = true) {
+      const nextSrc = muted ? bgmUrlMuted : bgmUrlUnmuted;
       if (forceReload) {
         bgmPlayer.src = '';
       }
-      if (bgmPlayer.src !== bgmUrl) {
-        bgmPlayer.src = bgmUrl;
+      if (bgmPlayer.src !== nextSrc) {
+        bgmPlayer.src = nextSrc;
       }
     }
 
@@ -707,7 +727,7 @@ document.addEventListener('DOMContentLoaded', () => {
       } else {
         // YouTube API準備前でも、ユーザー操作時に確実に再試行させる
         pendingPlayAfterReady = true;
-        loadIframeSource(true);
+        loadIframeSource(true, !hasUserGesture);
         ensureYouTubeApi();
       }
     }
@@ -778,6 +798,10 @@ document.addEventListener('DOMContentLoaded', () => {
             }
           },
           onError: () => {
+            if (!isStoppedByUser) {
+              // API失敗時はiframe直再生にフォールバック
+              loadIframeSource(true, !hasUserGesture);
+            }
             isPlaying = false;
             setBgmUiState(false);
           }
@@ -808,8 +832,10 @@ document.addEventListener('DOMContentLoaded', () => {
 
     // 背景再生用プレイヤーを常時ロード。音あり自動再生はブラウザ側でブロックされる場合がある。
     bgmPlayerWrap.hidden = false;
-    loadIframeSource();
+    loadIframeSource(false, true);
     ensureYouTubeApi();
+    // 初期ロード時にも再生開始を明示的に試行
+    startBgm(false);
     setBgmUiState(false);
 
     // 初回ユーザー操作時に再生を再試行

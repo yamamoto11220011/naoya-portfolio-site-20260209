@@ -3,6 +3,67 @@
    ============================ */
 
 document.addEventListener('DOMContentLoaded', () => {
+  const I18N_STORAGE_KEY = 'portfolio_lang';
+  const translations = {
+    ja: {
+      menu_about: 'About',
+      menu_works: 'Works',
+      menu_now: 'Now',
+      menu_links: 'Links',
+      menu_contact: 'Contact',
+      menu_cta: '相談する',
+      bgm_play: 'BGM 再生（44秒〜）',
+      bgm_stop: 'BGM 停止'
+    },
+    en: {
+      menu_about: 'About',
+      menu_works: 'Works',
+      menu_now: 'Now',
+      menu_links: 'Links',
+      menu_contact: 'Contact',
+      menu_cta: 'Contact',
+      bgm_play: 'Play BGM (from 0:44)',
+      bgm_stop: 'Stop BGM'
+    },
+    id: {
+      menu_about: 'Tentang',
+      menu_works: 'Karya',
+      menu_now: 'Sekarang',
+      menu_links: 'Tautan',
+      menu_contact: 'Kontak',
+      menu_cta: 'Hubungi',
+      bgm_play: 'Putar BGM (mulai 0:44)',
+      bgm_stop: 'Hentikan BGM'
+    },
+    zh: {
+      menu_about: '关于',
+      menu_works: '作品',
+      menu_now: '现在',
+      menu_links: '链接',
+      menu_contact: '联系',
+      menu_cta: '咨询',
+      bgm_play: '播放 BGM（从 0:44）',
+      bgm_stop: '停止 BGM'
+    },
+    ko: {
+      menu_about: '소개',
+      menu_works: '작업',
+      menu_now: '현재',
+      menu_links: '링크',
+      menu_contact: '문의',
+      menu_cta: '상담하기',
+      bgm_play: 'BGM 재생 (0:44부터)',
+      bgm_stop: 'BGM 정지'
+    }
+  };
+
+  function applyLanguage(lang) {
+    const dict = translations[lang] || translations.ja;
+    document.querySelectorAll('[data-i18n]').forEach((el) => {
+      const key = el.getAttribute('data-i18n');
+      if (dict[key]) el.textContent = dict[key];
+    });
+  }
 
   // ── Hamburger Menu ──
   const hamburger = document.getElementById('hamburger');
@@ -123,29 +184,53 @@ document.addEventListener('DOMContentLoaded', () => {
   window.addEventListener('scroll', updateHeader, { passive: true });
   updateHeader();
 
-  // ── BGM Toggle (YouTube start at 44s) ──
+  // ── Language Menu ──
+  const langSelect = document.getElementById('langSelect');
+  const savedLang = localStorage.getItem(I18N_STORAGE_KEY) || 'ja';
+  applyLanguage(savedLang);
+  if (langSelect) {
+    langSelect.value = savedLang;
+    langSelect.addEventListener('change', () => {
+      const nextLang = langSelect.value;
+      localStorage.setItem(I18N_STORAGE_KEY, nextLang);
+      applyLanguage(nextLang);
+      const toggle = document.getElementById('bgmToggle');
+      if (toggle && toggle.getAttribute('aria-expanded') === 'true') {
+        const dict = translations[nextLang] || translations.ja;
+        const label = toggle.querySelector('.link-label');
+        if (label) label.textContent = dict.bgm_stop;
+      }
+    });
+  }
+
+  // ── BGM Toggle (YouTube background playback) ──
   const bgmToggle = document.getElementById('bgmToggle');
   const bgmPlayerWrap = document.getElementById('bgmPlayerWrap');
   const bgmPlayer = document.getElementById('bgmPlayer');
 
   if (bgmToggle && bgmPlayerWrap && bgmPlayer) {
-    const bgmUrl = 'https://www.youtube.com/embed/n4tK7LYFxI0?start=44&autoplay=1&loop=1&playlist=n4tK7LYFxI0';
+    const bgmUrl = 'https://www.youtube.com/embed/jK2aIUmmdP4?start=44&autoplay=1&loop=1&playlist=jK2aIUmmdP4';
     let isPlaying = false;
+    const bgmLabel = bgmToggle.querySelector('.link-label');
+    const bgmArrow = bgmToggle.querySelector('.link-arrow');
+
+    // 背景再生専用なので常に非表示のまま動かす
+    bgmPlayerWrap.hidden = false;
 
     bgmToggle.addEventListener('click', () => {
+      const currentLang = (langSelect && langSelect.value) || localStorage.getItem(I18N_STORAGE_KEY) || 'ja';
+      const dict = translations[currentLang] || translations.ja;
       if (!isPlaying) {
         bgmPlayer.src = bgmUrl;
-        bgmPlayerWrap.hidden = false;
         bgmToggle.setAttribute('aria-expanded', 'true');
-        bgmToggle.querySelector('.link-label').textContent = 'BGM 停止';
-        bgmToggle.querySelector('.link-arrow').innerHTML = '<i class="fas fa-stop"></i>';
+        if (bgmLabel) bgmLabel.textContent = dict.bgm_stop;
+        if (bgmArrow) bgmArrow.innerHTML = '<i class="fas fa-stop"></i>';
         isPlaying = true;
       } else {
         bgmPlayer.src = '';
-        bgmPlayerWrap.hidden = true;
         bgmToggle.setAttribute('aria-expanded', 'false');
-        bgmToggle.querySelector('.link-label').textContent = 'BGM 再生（44秒〜）';
-        bgmToggle.querySelector('.link-arrow').innerHTML = '<i class="fas fa-play"></i>';
+        if (bgmLabel) bgmLabel.textContent = dict.bgm_play;
+        if (bgmArrow) bgmArrow.innerHTML = '<i class="fas fa-play"></i>';
         isPlaying = false;
       }
     });

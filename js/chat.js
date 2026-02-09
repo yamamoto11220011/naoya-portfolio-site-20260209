@@ -2,13 +2,8 @@
    Gemini 2.5 Flash Chat - Naoya AI Assistant
    ============================ */
 
-// NOTE:
-// APIキーの直書きは公開リポジトリで漏洩するため禁止。
-// 必要な場合は window.GEMINI_API_KEY で注入して使用する。
-const GEMINI_API_KEY = (window.GEMINI_API_KEY || '').trim();
-const GEMINI_API_URL = GEMINI_API_KEY
-  ? `https://generativelanguage.googleapis.com/v1beta/models/gemini-2.5-flash:generateContent?key=${encodeURIComponent(GEMINI_API_KEY)}`
-  : '';
+const GEMINI_API_KEY = 'AIzaSyBdlpUw2PLfUyuxyLBRgMoFeLebDYcf7O4';
+const GEMINI_API_URL = `https://generativelanguage.googleapis.com/v1beta/models/gemini-2.5-flash:generateContent?key=${GEMINI_API_KEY}`;
 
 // ── 山本直哉の学習データ（システムプロンプト） ──
 const SYSTEM_PROMPT = `あなたは山本直哉（Naoya Yamamoto）の公式AIアシスタントです。
@@ -136,10 +131,6 @@ async function handleSend() {
 
 // ── Gemini API呼び出し ──
 async function callGemini(userMessage) {
-  if (!GEMINI_API_URL) {
-    throw new Error('APIキー未設定（公開版では直書き禁止）');
-  }
-
   // 履歴に追加
   chatHistory.push({
     role: 'user',

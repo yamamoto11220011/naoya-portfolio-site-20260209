@@ -444,6 +444,7 @@ document.addEventListener('DOMContentLoaded', () => {
     if (prefersReducedMotion || seenBefore) {
       closeOpening(true);
     } else {
+      openingCinematic.classList.add('is-intense');
       openingTimer = window.setTimeout(() => closeOpening(false), 3000);
       if (openingEnter) {
         openingEnter.addEventListener('click', () => {

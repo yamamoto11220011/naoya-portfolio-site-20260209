@@ -13,6 +13,9 @@ document.addEventListener('DOMContentLoaded', () => {
       menu_links: 'Links',
       menu_contact: 'Contact',
       menu_cta: '相談する',
+      opening_copy: 'この瞬間から、AIは道具ではなく、創造の神経になる。',
+      opening_enter: '未来へ入る',
+      splash_manifesto: '心が動く場所から、次のプロダクトが生まれる。',
       splash_sub: 'Artificial Intelligence changes everything.',
       splash_enter: 'ENTER',
       hero_titles: 'ZEN大学 ｜ Google 学生AIアンバサダー ｜ NewsPicks アンバサダー ｜ 積水グループアンバサダー',
@@ -86,6 +89,9 @@ document.addEventListener('DOMContentLoaded', () => {
       menu_links: 'Links',
       menu_contact: 'Contact',
       menu_cta: 'Contact',
+      opening_copy: 'From this moment, AI stops being a tool and becomes the nerve of creation.',
+      opening_enter: 'ENTER THE FUTURE',
+      splash_manifesto: 'Where emotion moves first, the next product is born.',
       splash_sub: 'Artificial Intelligence changes everything.',
       splash_enter: 'ENTER',
       hero_titles: 'ZEN University | Google Student AI Ambassador | NewsPicks Ambassador | Sekisui Group Ambassador',
@@ -159,6 +165,9 @@ document.addEventListener('DOMContentLoaded', () => {
       menu_links: 'Tautan',
       menu_contact: 'Kontak',
       menu_cta: 'Hubungi',
+      opening_copy: 'Mulai saat ini, AI bukan lagi sekadar alat, melainkan saraf kreativitas.',
+      opening_enter: 'MASUK KE MASA DEPAN',
+      splash_manifesto: 'Produk berikutnya lahir dari momen yang menggerakkan hati.',
       splash_sub: 'Kecerdasan buatan mengubah segalanya.',
       splash_enter: 'MASUK',
       hero_titles: 'Universitas ZEN | Duta AI Mahasiswa Google | Duta NewsPicks | Duta Grup Sekisui',
@@ -232,6 +241,9 @@ document.addEventListener('DOMContentLoaded', () => {
       menu_links: '链接',
       menu_contact: '联系',
       menu_cta: '咨询',
+      opening_copy: '从这一刻起，AI不只是工具，而是创造的神经。',
+      opening_enter: '进入未来',
+      splash_manifesto: '当内心被触动，下一代产品就此诞生。',
       splash_sub: '人工智能正在改变一切。',
       splash_enter: '进入',
       hero_titles: 'ZEN大学｜Google 学生AI大使｜NewsPicks 大使｜积水集团大使',
@@ -305,6 +317,9 @@ document.addEventListener('DOMContentLoaded', () => {
       menu_links: '링크',
       menu_contact: '문의',
       menu_cta: '상담하기',
+      opening_copy: '이 순간부터 AI는 도구를 넘어, 창조의 신경이 됩니다.',
+      opening_enter: '미래로 입장',
+      splash_manifesto: '마음이 먼저 움직일 때, 다음 프로덕트가 태어납니다.',
       splash_sub: '인공지능은 모든 것을 바꿉니다.',
       splash_enter: '입장',
       hero_titles: 'ZEN대학교 | Google 학생 AI 앰배서더 | NewsPicks 앰배서더 | 세키스이 그룹 앰배서더',
@@ -396,6 +411,64 @@ document.addEventListener('DOMContentLoaded', () => {
     });
   }
 
+  const prefersReducedMotion = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+
+  // ── Opening Cinematic ──
+  const openingCinematic = document.getElementById('openingCinematic');
+  const openingEnter = document.getElementById('openingEnter');
+  const openingSeenKey = 'opening_seen_v2026_02_09';
+  let openingTimer = null;
+  let openingClosed = false;
+
+  function closeOpening(immediate = false) {
+    if (openingClosed) return;
+    openingClosed = true;
+    document.body.classList.remove('is-opening');
+    localStorage.setItem(openingSeenKey, '1');
+
+    if (!openingCinematic) return;
+
+    if (immediate) {
+      openingCinematic.hidden = true;
+      return;
+    }
+
+    openingCinematic.classList.add('is-leaving');
+    window.setTimeout(() => {
+      openingCinematic.hidden = true;
+    }, 950);
+  }
+
+  if (openingCinematic) {
+    const seenBefore = localStorage.getItem(openingSeenKey) === '1';
+    if (prefersReducedMotion || seenBefore) {
+      closeOpening(true);
+    } else {
+      openingTimer = window.setTimeout(() => closeOpening(false), 3000);
+      if (openingEnter) {
+        openingEnter.addEventListener('click', () => {
+          if (openingTimer) window.clearTimeout(openingTimer);
+          closeOpening(false);
+        });
+      }
+      openingCinematic.addEventListener('click', (event) => {
+        if (event.target === openingCinematic) {
+          if (openingTimer) window.clearTimeout(openingTimer);
+          closeOpening(false);
+        }
+      });
+      document.addEventListener('keydown', (event) => {
+        if (openingClosed) return;
+        if (event.key === 'Enter' || event.key === ' ' || event.key === 'Escape') {
+          if (openingTimer) window.clearTimeout(openingTimer);
+          closeOpening(false);
+        }
+      });
+    }
+  } else {
+    document.body.classList.remove('is-opening');
+  }
+
   // ── Hamburger Menu ──
   const hamburger = document.getElementById('hamburger');
   const mobileNav = document.getElementById('mobileNav');
@@ -460,7 +533,11 @@ document.addEventListener('DOMContentLoaded', () => {
     '.chat-container'
   );
 
-  fadeTargets.forEach(el => el.classList.add('fade-in'));
+  fadeTargets.forEach((el, index) => {
+    el.classList.add('fade-in');
+    const delay = Math.min((index % 8) * 44, 320);
+    el.style.setProperty('--fade-delay', `${delay}ms`);
+  });
 
   const observer = new IntersectionObserver((entries) => {
     entries.forEach(entry => {
@@ -499,11 +576,11 @@ document.addEventListener('DOMContentLoaded', () => {
     });
   }
 
-  window.addEventListener('scroll', updateActiveNav, { passive: true });
-  updateActiveNav();
-
   // ── Header Background on Scroll ──
   const header = document.getElementById('header');
+  const scrollProgress = document.getElementById('scrollProgress');
+  const splash = document.getElementById('splash');
+  const splashContent = document.querySelector('.splash-content');
 
   function updateHeader() {
     if (window.scrollY > 20) {
@@ -513,8 +590,40 @@ document.addEventListener('DOMContentLoaded', () => {
     }
   }
 
-  window.addEventListener('scroll', updateHeader, { passive: true });
-  updateHeader();
+  let scrollTicking = false;
+  function updateScrollUi() {
+    const scrollMax = Math.max(1, document.documentElement.scrollHeight - window.innerHeight);
+    const progress = Math.min(100, (window.scrollY / scrollMax) * 100);
+    if (scrollProgress) {
+      scrollProgress.style.width = `${progress}%`;
+    }
+
+    if (!prefersReducedMotion && splash && splashContent) {
+      const splashHeight = splash.offsetHeight || window.innerHeight;
+      const passed = Math.min(window.scrollY, splashHeight);
+      const offsetY = passed * 0.075;
+      const fade = 1 - Math.min(0.45, passed / splashHeight);
+      splashContent.style.transform = `translate3d(0, ${offsetY}px, 0)`;
+      splashContent.style.opacity = String(fade);
+    }
+  }
+
+  function syncScrollEffects() {
+    updateHeader();
+    updateActiveNav();
+    updateScrollUi();
+    scrollTicking = false;
+  }
+
+  function requestScrollSync() {
+    if (scrollTicking) return;
+    scrollTicking = true;
+    window.requestAnimationFrame(syncScrollEffects);
+  }
+
+  window.addEventListener('scroll', requestScrollSync, { passive: true });
+  window.addEventListener('resize', requestScrollSync, { passive: true });
+  requestScrollSync();
 
   // ── Language Menu ──
   const langSelect = document.getElementById('langSelect');

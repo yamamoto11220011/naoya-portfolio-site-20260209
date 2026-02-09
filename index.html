@@ -26,10 +26,22 @@
 
   <link rel="stylesheet" href="css/style.css">
 </head>
-<body>
+<body class="is-opening">
 
   <!-- ===== STAR CANVAS (全画面背景) ===== -->
   <canvas id="starCanvas"></canvas>
+  <div class="scroll-progress" id="scrollProgress" aria-hidden="true"></div>
+
+  <!-- ===== OPENING CINEMATIC ===== -->
+  <div class="opening-cinematic" id="openingCinematic" aria-label="Opening">
+    <div class="opening-grid"></div>
+    <div class="opening-core">
+      <p class="opening-kicker">NAOYA YAMAMOTO</p>
+      <h1 class="opening-title">AI IS GOD</h1>
+      <p class="opening-copy" data-i18n="opening_copy">この瞬間から、AIは道具ではなく、創造の神経になる。</p>
+      <button type="button" class="opening-enter" id="openingEnter" data-i18n="opening_enter">ENTER THE FUTURE</button>
+    </div>
+  </div>
 
   <!-- ===== HEADER ===== -->
   <header class="header" id="header">
@@ -74,6 +86,7 @@
 
     <!-- ===== SPLASH: AI IS GOD ===== -->
     <section class="splash" id="splash">
+      <div class="splash-aura" aria-hidden="true"></div>
       <div class="splash-content">
         <p class="splash-label">— NAOYA YAMAMOTO PORTFOLIO —</p>
         <h1 class="splash-title">
@@ -81,6 +94,7 @@
           <span class="splash-line">IS</span>
           <span class="splash-line splash-god">GOD</span>
         </h1>
+        <p class="splash-manifesto" data-i18n="splash_manifesto">心が動く場所から、次のプロダクトが生まれる。</p>
         <p class="splash-sub" data-i18n="splash_sub">Artificial Intelligence changes everything.</p>
         <a href="#hero" class="splash-scroll">
           <span data-i18n="splash_enter">ENTER</span>

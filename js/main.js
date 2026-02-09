@@ -663,9 +663,14 @@ document.addEventListener('DOMContentLoaded', () => {
 
   if (bgmToggle && bgmPlayerWrap && bgmPlayer) {
     const videoId = 'jK2aIUmmdP4';
-    const bgmUrl = `https://www.youtube.com/embed/${videoId}?enablejsapi=1&start=0&autoplay=1&loop=1&playlist=${videoId}&playsinline=1`;
+    const pageOrigin = window.location.origin;
+    const hasValidOrigin = pageOrigin && pageOrigin !== 'null';
+    const originParam = hasValidOrigin ? `&origin=${encodeURIComponent(pageOrigin)}` : '';
+    const bgmUrl = `https://www.youtube.com/embed/${videoId}?enablejsapi=1&start=0&autoplay=1&loop=1&playlist=${videoId}&playsinline=1&mute=1${originParam}`;
     let isPlaying = false;
     let isStoppedByUser = false;
+    let hasUserGesture = false;
+    let pendingPlayAfterReady = false;
     let player = null;
     const bgmLabel = bgmToggle.querySelector('.link-label');
     const bgmArrow = bgmToggle.querySelector('.link-arrow');
@@ -685,13 +690,25 @@ document.addEventListener('DOMContentLoaded', () => {
       }
     }
 
-    function startBgm() {
+    function startBgm(fromUserGesture = false) {
+      if (fromUserGesture) hasUserGesture = true;
       isStoppedByUser = false;
       if (player && typeof player.playVideo === 'function') {
+        if (hasUserGesture && typeof player.unMute === 'function') {
+          player.unMute();
+        } else if (!hasUserGesture && typeof player.mute === 'function') {
+          player.mute();
+        }
         player.playVideo();
+        if (hasUserGesture) {
+          isPlaying = true;
+          setBgmUiState(true);
+        }
       } else {
         // YouTube API準備前でも、ユーザー操作時に確実に再試行させる
+        pendingPlayAfterReady = true;
         loadIframeSource(true);
+        ensureYouTubeApi();
       }
     }
 
@@ -708,32 +725,46 @@ document.addEventListener('DOMContentLoaded', () => {
 
     function initYouTubePlayer() {
       if (!window.YT || !window.YT.Player || player) return;
+      const playerVars = {
+        autoplay: 1,
+        mute: 1,
+        controls: 0,
+        disablekb: 1,
+        fs: 0,
+        iv_load_policy: 3,
+        loop: 1,
+        modestbranding: 1,
+        playsinline: 1,
+        rel: 0,
+        start: 0,
+        playlist: videoId
+      };
+      if (hasValidOrigin) playerVars.origin = pageOrigin;
+
       player = new window.YT.Player('bgmPlayer', {
         videoId,
-        playerVars: {
-          autoplay: 1,
-          controls: 0,
-          disablekb: 1,
-          fs: 0,
-          iv_load_policy: 3,
-          loop: 1,
-          modestbranding: 1,
-          playsinline: 1,
-          rel: 0,
-          start: 0,
-          playlist: videoId
-        },
+        playerVars,
         events: {
           onReady: (event) => {
-            if (!isStoppedByUser) {
+            if (isStoppedByUser) return;
+            if (!hasUserGesture && typeof event.target.mute === 'function') {
+              event.target.mute();
+            }
+            if (hasUserGesture && typeof event.target.unMute === 'function') {
+              event.target.unMute();
+            }
+            if (pendingPlayAfterReady || !isStoppedByUser) {
               event.target.playVideo();
+              pendingPlayAfterReady = false;
             }
           },
           onStateChange: (event) => {
             const state = event.data;
             if (state === window.YT.PlayerState.PLAYING) {
-              isPlaying = true;
-              setBgmUiState(true);
+              if (hasUserGesture) {
+                isPlaying = true;
+                setBgmUiState(true);
+              }
             } else if (state === window.YT.PlayerState.PAUSED || state === window.YT.PlayerState.ENDED) {
               if (isStoppedByUser) {
                 isPlaying = false;
@@ -784,7 +815,7 @@ document.addEventListener('DOMContentLoaded', () => {
     // 初回ユーザー操作時に再生を再試行
     const bootstrapPlayback = () => {
       if (!isStoppedByUser) {
-        startBgm();
+        startBgm(true);
       }
     };
     document.addEventListener('pointerdown', bootstrapPlayback, { once: true, passive: true });
@@ -795,14 +826,14 @@ document.addEventListener('DOMContentLoaded', () => {
     const openingEnterButton = document.getElementById('openingEnter');
     if (openingEnterButton) {
       openingEnterButton.addEventListener('click', () => {
-        if (!isStoppedByUser) startBgm();
+        if (!isStoppedByUser) startBgm(true);
       });
     }
 
     bgmToggle.addEventListener('click', (event) => {
       event.preventDefault();
       if (!isPlaying) {
-        startBgm();
+        startBgm(true);
       } else {
         stopBgm();
       }

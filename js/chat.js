@@ -2,8 +2,40 @@
    Gemini 2.5 Flash Chat - Naoya AI Assistant
    ============================ */
 
-const GEMINI_API_KEY = 'AIzaSyBdlpUw2PLfUyuxyLBRgMoFeLebDYcf7O4';
-const GEMINI_API_URL = `https://generativelanguage.googleapis.com/v1beta/models/gemini-2.5-flash:generateContent?key=${GEMINI_API_KEY}`;
+const GEMINI_MODEL = 'gemini-2.5-flash';
+const GEMINI_API_KEY_STORAGE_KEY = 'GEMINI_API_KEY';
+
+function getGeminiApiKey() {
+  return (window.localStorage.getItem(GEMINI_API_KEY_STORAGE_KEY) || '').trim();
+}
+
+function setGeminiApiKey(key) {
+  window.localStorage.setItem(GEMINI_API_KEY_STORAGE_KEY, key.trim());
+}
+
+function clearGeminiApiKey() {
+  window.localStorage.removeItem(GEMINI_API_KEY_STORAGE_KEY);
+}
+
+function getGeminiApiUrl(apiKey) {
+  return `https://generativelanguage.googleapis.com/v1beta/models/${GEMINI_MODEL}:generateContent?key=${encodeURIComponent(apiKey)}`;
+}
+
+function ensureGeminiApiKey() {
+  let apiKey = getGeminiApiKey();
+  if (apiKey) return apiKey;
+
+  const input = window.prompt('Gemini APIキーを入力してください（ブラウザ内保存）');
+  if (!input) {
+    throw new Error('APIキー未設定');
+  }
+  apiKey = input.trim();
+  if (!apiKey) {
+    throw new Error('APIキー未設定');
+  }
+  setGeminiApiKey(apiKey);
+  return apiKey;
+}
 
 // ── 山本直哉の学習データ（システムプロンプト） ──
 const SYSTEM_PROMPT = `あなたは山本直哉（Naoya Yamamoto）の公式AIアシスタントです。
@@ -131,6 +163,9 @@ async function handleSend() {
 
 // ── Gemini API呼び出し ──
 async function callGemini(userMessage) {
+  const apiKey = ensureGeminiApiKey();
+  const apiUrl = getGeminiApiUrl(apiKey);
+
   // 履歴に追加
   chatHistory.push({
     role: 'user',
@@ -157,7 +192,7 @@ async function callGemini(userMessage) {
     ]
   };
 
-  const response = await fetch(GEMINI_API_URL, {
+  const response = await fetch(apiUrl, {
     method: 'POST',
     headers: {
       'Content-Type': 'application/json',
@@ -169,6 +204,12 @@ async function callGemini(userMessage) {
     const errorText = await response.text().catch(() => '');
     // 履歴からエラーになったメッセージを削除
     chatHistory.pop();
+
+    if (response.status === 403 && errorText.includes('reported as leaked')) {
+      clearGeminiApiKey();
+      throw new Error('APIキーが無効化されています。新しいキーを入力して再試行してください。');
+    }
+
     throw new Error(`HTTP ${response.status}: ${errorText.substring(0, 200)}`);
   }
 

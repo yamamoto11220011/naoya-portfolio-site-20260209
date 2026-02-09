@@ -6,16 +6,18 @@
   const canvas = document.getElementById('starCanvas');
   if (!canvas) return;
   const ctx = canvas.getContext('2d');
+  const prefersReducedMotion = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+  const isMobile = window.innerWidth < 768;
 
   let w, h;
   let stars = [];
   let shootingStars = [];
-  const STAR_COUNT = 320;
-  const SHOOTING_INTERVAL = 4000; // ms
+  const STAR_COUNT = prefersReducedMotion ? 0 : (isMobile ? 70 : 140);
+  const SHOOTING_INTERVAL = isMobile ? 7000 : 5000; // ms
 
   function resize() {
     w = canvas.width = window.innerWidth;
-    h = canvas.height = document.documentElement.scrollHeight;
+    h = canvas.height = window.innerHeight;
   }
 
   function createStar() {
@@ -95,6 +97,7 @@
 
   // ── Nebula / 星雲 ──
   function drawNebula() {
+    if (isMobile) return;
     // 非常に薄い星雲を数か所に配置
     const nebulae = [
       { x: w * 0.15, y: h * 0.08, r: 250, color: '60, 100, 200' },
@@ -122,16 +125,17 @@
 
   // 流れ星を定期的に生成
   setInterval(() => {
+    if (prefersReducedMotion) return;
     if (shootingStars.length < 2) {
       shootingStars.push(createShootingStar());
     }
   }, SHOOTING_INTERVAL);
 
-  // Resize observer
-  const resizeObserver = new ResizeObserver(() => {
+  if (STAR_COUNT === 0) {
     resize();
-  });
-  resizeObserver.observe(document.body);
+    return;
+  }
+
   window.addEventListener('resize', resize);
 
   init();

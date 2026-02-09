@@ -93,9 +93,6 @@ let chatHistory = [];
 
 // ── DOM要素 ──
 const chatMessages = document.getElementById('chatMessages');
-const chatForm = document.getElementById('chatForm');
-const chatInput = document.getElementById('chatInput');
-const chatSend = document.getElementById('chatSend');
 const chatSuggestions = document.getElementById('chatSuggestions');
 
 // ── サジェスチョンチップクリック ──
@@ -104,30 +101,19 @@ if (chatSuggestions) {
     chip.addEventListener('click', () => {
       const query = chip.getAttribute('data-query');
       if (query) {
-        chatInput.value = query;
-        handleSend();
+        handleSend(query);
       }
     });
   });
 }
 
-// ── フォーム送信 ──
-if (chatForm) {
-  chatForm.addEventListener('submit', (e) => {
-    e.preventDefault();
-    handleSend();
-  });
-}
-
 // ── 送信処理 ──
-async function handleSend() {
-  const message = chatInput.value.trim();
+async function handleSend(selectedMessage) {
+  const message = String(selectedMessage || '').trim();
   if (!message) return;
 
   // ユーザーメッセージ追加
   appendMessage(message, 'user');
-  chatInput.value = '';
-  chatSend.disabled = true;
 
   // タイピングインジケーター表示
   const typingEl = appendTyping();
@@ -141,9 +127,6 @@ async function handleSend() {
     console.error('Embedding Search Error:', error);
     appendMessage('申し訳ございません。回答エラーが発生しました。\n\n(詳細: ' + error.message + ')', 'ai');
   }
-
-  chatSend.disabled = false;
-  chatInput.focus();
 }
 
 // ── 埋め込み（簡易ベクトル）ベース回答 ──

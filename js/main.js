@@ -14,7 +14,7 @@ document.addEventListener('DOMContentLoaded', () => {
       menu_contact: 'Contact',
       menu_cta: '相談する',
       opening_copy: 'この瞬間から、AIは道具ではなく、創造の神経になる。',
-      opening_enter: '未来へ入る',
+      opening_enter: 'AGIの世界に入る',
       splash_manifesto: '心が動く場所から、次のプロダクトが生まれる。',
       splash_sub: 'Artificial Intelligence changes everything.',
       splash_enter: 'ENTER',
@@ -90,7 +90,7 @@ document.addEventListener('DOMContentLoaded', () => {
       menu_contact: 'Contact',
       menu_cta: 'Contact',
       opening_copy: 'From this moment, AI stops being a tool and becomes the nerve of creation.',
-      opening_enter: 'ENTER THE FUTURE',
+      opening_enter: 'Enter AGI World',
       splash_manifesto: 'Where emotion moves first, the next product is born.',
       splash_sub: 'Artificial Intelligence changes everything.',
       splash_enter: 'ENTER',
@@ -166,7 +166,7 @@ document.addEventListener('DOMContentLoaded', () => {
       menu_contact: 'Kontak',
       menu_cta: 'Hubungi',
       opening_copy: 'Mulai saat ini, AI bukan lagi sekadar alat, melainkan saraf kreativitas.',
-      opening_enter: 'MASUK KE MASA DEPAN',
+      opening_enter: 'Masuk ke Dunia AGI',
       splash_manifesto: 'Produk berikutnya lahir dari momen yang menggerakkan hati.',
       splash_sub: 'Kecerdasan buatan mengubah segalanya.',
       splash_enter: 'MASUK',
@@ -242,7 +242,7 @@ document.addEventListener('DOMContentLoaded', () => {
       menu_contact: '联系',
       menu_cta: '咨询',
       opening_copy: '从这一刻起，AI不只是工具，而是创造的神经。',
-      opening_enter: '进入未来',
+      opening_enter: '进入AGI世界',
       splash_manifesto: '当内心被触动，下一代产品就此诞生。',
       splash_sub: '人工智能正在改变一切。',
       splash_enter: '进入',
@@ -318,7 +318,7 @@ document.addEventListener('DOMContentLoaded', () => {
       menu_contact: '문의',
       menu_cta: '상담하기',
       opening_copy: '이 순간부터 AI는 도구를 넘어, 창조의 신경이 됩니다.',
-      opening_enter: '미래로 입장',
+      opening_enter: 'AGI 세계로 입장',
       splash_manifesto: '마음이 먼저 움직일 때, 다음 프로덕트가 태어납니다.',
       splash_sub: '인공지능은 모든 것을 바꿉니다.',
       splash_enter: '입장',
@@ -463,10 +463,8 @@ document.addEventListener('DOMContentLoaded', () => {
       if (openingEnter) {
         openingEnter.addEventListener('click', () => {
           if (openingTimer) window.clearTimeout(openingTimer);
-          closeOpening(false);
-          window.setTimeout(() => {
-            moveToHomeSection();
-          }, prefersReducedMotion ? 0 : 120);
+          closeOpening(true);
+          moveToHomeSection();
         });
       }
       openingCinematic.addEventListener('click', (event) => {

@@ -15,7 +15,7 @@ document.addEventListener('DOMContentLoaded', () => {
       menu_cta: '相談する',
       opening_copy: 'この瞬間から、AIは道具ではなく、創造の神経になる。',
       opening_enter: '未来へ入る',
-      splash_manifesto: '心が動く場所から、次のプロダクトが生まれる。',
+      splash_manifesto: '熱狂こそ正義だ',
       splash_sub: 'Artificial Intelligence changes everything.',
       splash_enter: 'ENTER',
       hero_titles: 'ZEN大学 ｜ Google 学生AIアンバサダー ｜ NewsPicks アンバサダー ｜ 積水グループアンバサダー',
@@ -656,41 +656,13 @@ document.addEventListener('DOMContentLoaded', () => {
     });
   }
 
-  // ── BGM Toggle (YouTube background playback) ──
+  // ── BGM Toggle (Local Audio playback) ──
   const bgmToggle = document.getElementById('bgmToggle');
-  const bgmPlayerWrap = document.getElementById('bgmPlayerWrap');
-  const bgmPlayer = document.getElementById('bgmPlayer');
+  const bgmAudio = document.getElementById('bgmAudio');
 
-  if (bgmToggle && bgmPlayerWrap && bgmPlayer) {
-    const videoId = 'BSDPQ1uP7GI';
-    const listId = 'PLIYuJXGUx7wMpK3LWbiu0UdZq8tCri65f';
-    const pageOrigin = window.location.origin;
-    const hasValidOrigin = pageOrigin && pageOrigin !== 'null';
-    const buildBgmUrl = (muted = true) => {
-      const params = new URLSearchParams({
-        enablejsapi: '1',
-        start: '0',
-        autoplay: '1',
-        loop: '1',
-        playsinline: '1',
-        controls: '0',
-        rel: '0',
-        modestbranding: '1',
-        iv_load_policy: '3',
-        playlist: videoId,
-        list: listId,
-        mute: muted ? '1' : '0'
-      });
-      if (hasValidOrigin) params.set('origin', pageOrigin);
-      return `https://www.youtube.com/embed/${videoId}?${params.toString()}`;
-    };
-    const bgmUrlMuted = buildBgmUrl(true);
-    const bgmUrlUnmuted = buildBgmUrl(false);
+  if (bgmToggle && bgmAudio) {
     let isPlaying = false;
     let isStoppedByUser = false;
-    let hasUserGesture = false;
-    let pendingPlayAfterReady = false;
-    let player = null;
     const bgmLabel = bgmToggle.querySelector('.link-label');
     const bgmArrow = bgmToggle.querySelector('.link-arrow');
 
@@ -700,166 +672,62 @@ document.addEventListener('DOMContentLoaded', () => {
       if (bgmArrow) bgmArrow.innerHTML = playing ? '<i class="fas fa-stop"></i>' : '<i class="fas fa-play"></i>';
     }
 
-    function loadIframeSource(forceReload = false, muted = true) {
-      const nextSrc = muted ? bgmUrlMuted : bgmUrlUnmuted;
-      if (forceReload) {
-        bgmPlayer.src = '';
-      }
-      if (bgmPlayer.src !== nextSrc) {
-        bgmPlayer.src = nextSrc;
-      }
-    }
-
-    function startBgm(fromUserGesture = false) {
-      if (fromUserGesture) hasUserGesture = true;
+    async function startBgm() {
       isStoppedByUser = false;
-      if (player && typeof player.playVideo === 'function') {
-        if (hasUserGesture && typeof player.unMute === 'function') {
-          player.unMute();
-        } else if (!hasUserGesture && typeof player.mute === 'function') {
-          player.mute();
-        }
-        player.playVideo();
-        if (hasUserGesture) {
-          isPlaying = true;
-          setBgmUiState(true);
-        }
-      } else {
-        // YouTube API準備前でも、ユーザー操作時に確実に再試行させる
-        pendingPlayAfterReady = true;
-        loadIframeSource(true, !hasUserGesture);
-        ensureYouTubeApi();
+      try {
+        await bgmAudio.play();
+        isPlaying = true;
+        setBgmUiState(true);
+      } catch (_) {
+        isPlaying = false;
+        setBgmUiState(false);
       }
     }
 
     function stopBgm() {
       isStoppedByUser = true;
-      if (player && typeof player.pauseVideo === 'function') {
-        player.pauseVideo();
-      } else {
-        bgmPlayer.src = '';
-      }
+      bgmAudio.pause();
       isPlaying = false;
       setBgmUiState(false);
     }
 
-    function initYouTubePlayer() {
-      if (!window.YT || !window.YT.Player || player) return;
-      const playerVars = {
-        autoplay: 1,
-        mute: 1,
-        controls: 0,
-        disablekb: 1,
-        fs: 0,
-        iv_load_policy: 3,
-        loop: 1,
-        modestbranding: 1,
-        playsinline: 1,
-        rel: 0,
-        start: 0,
-        playlist: videoId
-      };
-      if (hasValidOrigin) playerVars.origin = pageOrigin;
+    bgmAudio.volume = 0.9;
+    bgmAudio.loop = true;
 
-      player = new window.YT.Player('bgmPlayer', {
-        videoId,
-        playerVars,
-        events: {
-          onReady: (event) => {
-            if (isStoppedByUser) return;
-            if (!hasUserGesture && typeof event.target.mute === 'function') {
-              event.target.mute();
-            }
-            if (hasUserGesture && typeof event.target.unMute === 'function') {
-              event.target.unMute();
-            }
-            if (pendingPlayAfterReady || !isStoppedByUser) {
-              event.target.playVideo();
-              pendingPlayAfterReady = false;
-            }
-          },
-          onStateChange: (event) => {
-            const state = event.data;
-            if (state === window.YT.PlayerState.PLAYING) {
-              if (hasUserGesture) {
-                isPlaying = true;
-                setBgmUiState(true);
-              }
-            } else if (state === window.YT.PlayerState.PAUSED || state === window.YT.PlayerState.ENDED) {
-              if (isStoppedByUser) {
-                isPlaying = false;
-                setBgmUiState(false);
-                return;
-              }
-              if (state === window.YT.PlayerState.ENDED) {
-                event.target.seekTo(0);
-                event.target.playVideo();
-              }
-            }
-          },
-          onError: () => {
-            if (!isStoppedByUser) {
-              // API失敗時はiframe直再生にフォールバック
-              loadIframeSource(true, !hasUserGesture);
-            }
-            isPlaying = false;
-            setBgmUiState(false);
-          }
-        }
-      });
-    }
+    bgmAudio.addEventListener('play', () => {
+      isPlaying = true;
+      setBgmUiState(true);
+    });
 
-    function ensureYouTubeApi() {
-      if (window.YT && window.YT.Player) {
-        initYouTubePlayer();
-        return;
-      }
+    bgmAudio.addEventListener('pause', () => {
+      if (isStoppedByUser) return;
+      isPlaying = false;
+      setBgmUiState(false);
+    });
 
-      const prevReady = window.onYouTubeIframeAPIReady;
-      window.onYouTubeIframeAPIReady = () => {
-        if (typeof prevReady === 'function') prevReady();
-        initYouTubePlayer();
-      };
+    // 初期ロード時に自動再生を試行
+    startBgm();
 
-      if (document.querySelector('script[data-yt-api="true"]')) return;
-
-      const script = document.createElement('script');
-      script.src = 'https://www.youtube.com/iframe_api';
-      script.async = true;
-      script.dataset.ytApi = 'true';
-      document.head.appendChild(script);
-    }
-
-    // 背景再生用プレイヤーを常時ロード。音あり自動再生はブラウザ側でブロックされる場合がある。
-    bgmPlayerWrap.hidden = false;
-    loadIframeSource(false, true);
-    ensureYouTubeApi();
-    // 初期ロード時にも再生開始を明示的に試行
-    startBgm(false);
-    setBgmUiState(false);
-
-    // 初回ユーザー操作時に再生を再試行
+    // 自動再生ブロック時でも初回ユーザー操作で再試行
     const bootstrapPlayback = () => {
-      if (!isStoppedByUser) {
-        startBgm(true);
-      }
+      if (!isStoppedByUser) startBgm();
     };
     document.addEventListener('pointerdown', bootstrapPlayback, { once: true, passive: true });
     document.addEventListener('keydown', bootstrapPlayback, { once: true, passive: true });
     document.addEventListener('touchstart', bootstrapPlayback, { once: true, passive: true });
 
-    // オープニングの入場ボタン押下時にも再生を再試行（ユーザー操作扱い）
+    // オープニングの入場ボタン押下時にも再生を再試行
     const openingEnterButton = document.getElementById('openingEnter');
     if (openingEnterButton) {
       openingEnterButton.addEventListener('click', () => {
-        if (!isStoppedByUser) startBgm(true);
+        if (!isStoppedByUser) startBgm();
       });
     }
 
     bgmToggle.addEventListener('click', (event) => {
       event.preventDefault();
       if (!isPlaying) {
-        startBgm(true);
+        startBgm();
       } else {
         stopBgm();
       }

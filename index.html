@@ -98,7 +98,7 @@
           <span class="splash-line">IS</span>
           <span class="splash-line splash-god">GOD</span>
         </h1>
-        <p class="splash-manifesto" data-i18n="splash_manifesto">心が動く場所から、次のプロダクトが生まれる。</p>
+        <p class="splash-manifesto" data-i18n="splash_manifesto">熱狂こそ正義だ</p>
         <p class="splash-sub" data-i18n="splash_sub">Artificial Intelligence changes everything.</p>
         <a href="#hero" class="splash-scroll">
           <span data-i18n="splash_enter">ENTER</span>
@@ -273,16 +273,9 @@
             <i class="fas fa-music link-icon"></i><span class="link-label" data-i18n="bgm_play">BGM 再生</span><span class="link-arrow"><i class="fas fa-play"></i></span>
           </button>
         </div>
-        <div class="bgm-player-wrap bgm-background" id="bgmPlayerWrap" hidden>
-          <iframe
-            id="bgmPlayer"
-            title="BGM Player"
-            loading="eager"
-            referrerpolicy="strict-origin-when-cross-origin"
-            allow="autoplay; encrypted-media; picture-in-picture"
-            allowfullscreen
-          ></iframe>
-        </div>
+        <audio id="bgmAudio" class="bgm-audio" preload="auto" loop aria-hidden="true">
+          <source src="audio/alan-walker-spectre.mp3" type="audio/mpeg">
+        </audio>
       </div>
     </section>
 

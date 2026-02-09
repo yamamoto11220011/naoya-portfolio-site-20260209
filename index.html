@@ -1,0 +1,290 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>山本 直哉 | Naoya Yamamoto - Portfolio</title>
+  <meta name="description" content="山本直哉のポートフォリオサイト。AIと自動化で、やりたいことを最短で形にする。">
+
+  <!-- OGP -->
+  <meta property="og:title" content="山本 直哉 | Naoya Yamamoto">
+  <meta property="og:description" content="AIと自動化で、やりたいことを最短で形にする。">
+  <meta property="og:image" content="images/naoya_avatar.jpg">
+  <meta property="og:type" content="website">
+  <meta name="twitter:card" content="summary_large_image">
+
+  <!-- Fonts - イケてるテック系 -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@300;400;500;600;700&family=Orbitron:wght@400;500;600;700;800;900&family=Noto+Sans+JP:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+
+  <!-- Font Awesome -->
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@fortawesome/fontawesome-free@6.4.0/css/all.min.css">
+
+  <!-- Marked.js -->
+  <script src="https://cdn.jsdelivr.net/npm/marked/marked.min.js"></script>
+
+  <link rel="stylesheet" href="css/style.css">
+</head>
+<body>
+
+  <!-- ===== STAR CANVAS (全画面背景) ===== -->
+  <canvas id="starCanvas"></canvas>
+
+  <!-- ===== HEADER ===== -->
+  <header class="header" id="header">
+    <div class="header-inner">
+      <a href="#splash" class="header-logo">
+        <span class="logo-icon">⚡</span> 山本直哉
+      </a>
+      <nav class="header-nav" id="headerNav">
+        <a href="#about" class="nav-link">About</a>
+        <a href="#works" class="nav-link">Works</a>
+        <a href="#now" class="nav-link">Now</a>
+        <a href="#links" class="nav-link">Links</a>
+        <a href="#contact" class="nav-link">Contact</a>
+      </nav>
+      <a href="#contact" class="header-cta">相談する</a>
+      <button class="hamburger" id="hamburger" aria-label="メニューを開く">
+        <span></span>
+        <span></span>
+        <span></span>
+      </button>
+    </div>
+  </header>
+
+  <!-- ===== MOBILE NAV ===== -->
+  <div class="mobile-nav" id="mobileNav">
+    <a href="#about" class="mobile-nav-link">About</a>
+    <a href="#works" class="mobile-nav-link">Works</a>
+    <a href="#now" class="mobile-nav-link">Now</a>
+    <a href="#links" class="mobile-nav-link">Links</a>
+    <a href="#contact" class="mobile-nav-link">Contact</a>
+    <a href="#contact" class="mobile-nav-cta">相談する</a>
+  </div>
+
+  <main>
+
+    <!-- ===== SPLASH: AI IS GOD ===== -->
+    <section class="splash" id="splash">
+      <div class="splash-content">
+        <p class="splash-label">— NAOYA YAMAMOTO PORTFOLIO —</p>
+        <h1 class="splash-title">
+          <span class="splash-line">AI</span>
+          <span class="splash-line">IS</span>
+          <span class="splash-line splash-god">GOD</span>
+        </h1>
+        <p class="splash-sub">Artificial Intelligence changes everything.</p>
+        <a href="#hero" class="splash-scroll">
+          <span>ENTER</span>
+          <i class="fas fa-chevron-down"></i>
+        </a>
+      </div>
+    </section>
+
+    <!-- ===== HERO ===== -->
+    <section class="hero" id="hero">
+      <div class="container hero-inner">
+        <div class="hero-text">
+          <div class="hero-name-row">
+            <div class="hero-avatar">
+              <img src="images/naoya_avatar.jpg" alt="山本 直哉のプロフィール写真" width="120" height="120">
+            </div>
+            <div>
+              <h2 class="hero-name">山本 直哉</h2>
+              <p class="hero-name-en">Naoya Yamamoto</p>
+            </div>
+          </div>
+          <p class="hero-titles">
+            ZEN大学 ｜ Google 学生AIアンバサダー ｜ NewsPicks アンバサダー ｜ 積水グループアンバサダー
+          </p>
+          <h3 class="hero-catch">AIと自動化で、やりたい<br class="sp-only">ことを最短で形にする。</h3>
+          <p class="hero-lead">
+            AI秘書や業務自動化ツールの試作からWebサイト制作まで、プロトタイプを高速で回して実装します。
+          </p>
+          <div class="hero-buttons">
+            <a href="#contact" class="btn btn-primary">コラボ・相談する</a>
+            <a href="#works" class="btn btn-secondary">実績を見る</a>
+          </div>
+          <p class="hero-note">企画→実装→改善までを短いサイクルで回せます。</p>
+        </div>
+      </div>
+    </section>
+
+    <!-- ===== AI CHAT ===== -->
+    <section class="section" id="ai-chat">
+      <div class="container">
+        <h2 class="section-title">
+          <i class="fas fa-robot" style="color: var(--accent); margin-right: 8px; font-size: 20px;"></i>
+          Ask AI about Naoya
+        </h2>
+        <p class="section-subtitle">山本直哉について何でも聞いてください。AIが回答します。</p>
+
+        <div class="chat-container" id="chatContainer">
+          <div class="chat-messages" id="chatMessages">
+            <div class="chat-message ai-message">
+              <div class="chat-avatar-ai">
+                <i class="fas fa-robot"></i>
+              </div>
+              <div class="chat-bubble">
+                <p>こんにちは！山本直哉についてのご質問にお答えします。<br>例えば「何を作っているの？」「強みは？」「どんな経歴？」など、何でもどうぞ！</p>
+              </div>
+            </div>
+          </div>
+          <div class="chat-input-area">
+            <div class="chat-suggestions" id="chatSuggestions">
+              <button class="suggestion-chip" data-query="どんなスキルがある？">💡 スキルは？</button>
+              <button class="suggestion-chip" data-query="いま何に注力している？">🔥 いま注力してること</button>
+              <button class="suggestion-chip" data-query="どんな実績がある？">🏆 実績を教えて</button>
+              <button class="suggestion-chip" data-query="仕事を依頼できる？">📩 依頼について</button>
+            </div>
+            <form class="chat-form" id="chatForm">
+              <input type="text" class="chat-input" id="chatInput" placeholder="質問を入力..." autocomplete="off">
+              <button type="submit" class="chat-send" id="chatSend" aria-label="送信">
+                <i class="fas fa-paper-plane"></i>
+              </button>
+            </form>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- ===== ABOUT ===== -->
+    <section class="section section-alt" id="about">
+      <div class="container">
+        <h2 class="section-title">About</h2>
+        <p class="section-subtitle">AIネイティブ世代で、とにかくAIツールを触るのが好き。</p>
+        <div class="about-body">
+          <p>AIが好きという原動力を活かし、日々の学習と制作を加速させています。強みは、情報収集から整理、そして実装までのサイクルを短期間で回せることです。</p>
+          <p>現在は、AI秘書のようなエージェント機能を持つ自動化ツールや、誰でも更新可能なWebサイトの仕組みづくりに注力しています。</p>
+          <p>長期的には、汎用人工知能に近づく技術やプロダクトの実装に携わり続けることを目標としています。</p>
+        </div>
+        <div class="strengths">
+          <h3 class="strengths-heading">強み</h3>
+          <div class="strengths-list">
+            <div class="strength-item">
+              <span class="strength-icon"><i class="fas fa-search"></i></span>
+              <div>
+                <p class="strength-text">情報収集→要点抽出→意思決定の整理</p>
+                <span class="tag">リサーチ</span><span class="tag">分析</span>
+              </div>
+            </div>
+            <div class="strength-item">
+              <span class="strength-icon"><i class="fas fa-cogs"></i></span>
+              <div>
+                <p class="strength-text">自動化ツールの試作（ワークフロー/AI秘書系）</p>
+                <span class="tag">自動化</span><span class="tag">プロトタイピング</span>
+              </div>
+            </div>
+            <div class="strength-item">
+              <span class="strength-icon"><i class="fas fa-code"></i></span>
+              <div>
+                <p class="strength-text">Webサイト制作（実装→改善まで）</p>
+                <span class="tag">Web制作</span><span class="tag">改善</span>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- ===== WORKS ===== -->
+    <section class="section" id="works">
+      <div class="container">
+        <h2 class="section-title">Works / Projects</h2>
+        <div class="works-grid">
+          <div class="work-card">
+            <div class="work-card-header">
+              <h3 class="work-card-title">Google 学生AIアンバサダー</h3>
+            </div>
+            <div class="work-card-body">
+              <div class="work-meta">
+                <div class="work-meta-item"><span class="work-meta-label">役割</span><span class="work-meta-value">学生アンバサダー</span></div>
+                <div class="work-meta-item"><span class="work-meta-label">規模</span><span class="work-meta-value">70名規模</span></div>
+              </div>
+              <p class="work-desc">イベント運営、参加者サポート、企画推進</p>
+              <p class="work-result"><i class="fas fa-check" style="color:var(--accent);margin-right:6px;font-size:12px;"></i>優秀評価を獲得</p>
+            </div>
+            <div class="work-card-footer"><span class="tag">企画</span><span class="tag">運営</span><span class="tag">コミュニティ</span></div>
+          </div>
+          <div class="work-card">
+            <div class="work-card-header">
+              <h3 class="work-card-title">AIサークル長（270名）</h3>
+            </div>
+            <div class="work-card-body">
+              <div class="work-meta">
+                <div class="work-meta-item"><span class="work-meta-label">役割</span><span class="work-meta-value">代表／運営体制づくり</span></div>
+                <div class="work-meta-item"><span class="work-meta-label">規模</span><span class="work-meta-value">270名</span></div>
+              </div>
+              <p class="work-desc">イベント企画運営、メンバー支援、運営フロー整備</p>
+              <p class="work-result"><i class="fas fa-check" style="color:var(--accent);margin-right:6px;font-size:12px;"></i>30人規模のオフライン・オンラインイベントを開催</p>
+            </div>
+            <div class="work-card-footer"><span class="tag">運営</span><span class="tag">仕組み化</span><span class="tag">コミュニティ</span></div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- ===== NOW ===== -->
+    <section class="section section-alt" id="now">
+      <div class="container">
+        <h2 class="section-title">Now</h2>
+        <ul class="now-list">
+          <li class="now-item"><span class="now-check"><i class="fas fa-check"></i></span><span>AI秘書・自動化ツールの開発</span></li>
+          <li class="now-item"><span class="now-check"><i class="fas fa-check"></i></span><span>誰でも作れて更新できるサイト制作の仕組み化</span></li>
+          <li class="now-item"><span class="now-check"><i class="fas fa-check"></i></span><span>AI活用で学習と制作の速度を上げる</span></li>
+        </ul>
+        <p class="now-updated">最終更新：2026年2月9日</p>
+      </div>
+    </section>
+
+    <!-- ===== LINKS ===== -->
+    <section class="section" id="links">
+      <div class="container">
+        <h2 class="section-title">Links</h2>
+        <div class="links-grid">
+          <a href="https://github.com/" target="_blank" rel="noopener noreferrer" class="link-card">
+            <i class="fab fa-github link-icon"></i><span class="link-label">GitHub</span><span class="link-arrow"><i class="fas fa-arrow-right"></i></span>
+          </a>
+          <a href="mailto:naoya.ado1dem@gmail.com" class="link-card">
+            <i class="fas fa-envelope link-icon"></i><span class="link-label">Email</span><span class="link-arrow"><i class="fas fa-arrow-right"></i></span>
+          </a>
+        </div>
+      </div>
+    </section>
+
+    <!-- ===== CONTACT ===== -->
+    <section class="section section-alt" id="contact">
+      <div class="container">
+        <h2 class="section-title">Contact</h2>
+        <p class="contact-lead">相談内容が固まってなくても大丈夫です。<br>目的だけ教えてください。</p>
+        <div class="contact-template">
+          <div class="template-header">
+            <span class="template-label">依頼テンプレート</span>
+            <button class="copy-btn" id="copyBtn" aria-label="テンプレートをコピー"><i class="fas fa-copy"></i> コピー</button>
+          </div>
+          <pre class="template-body" id="templateBody">目的：
+依頼内容：
+希望納期：
+予算感（任意）：
+連絡手段：</pre>
+        </div>
+        <a href="mailto:naoya.ado1dem@gmail.com?subject=相談・依頼&body=%E7%9B%AE%E7%9A%84%EF%BC%9A%0A%E4%BE%9D%E9%A0%BC%E5%86%85%E5%AE%B9%EF%BC%9A%0A%E5%B8%8C%E6%9C%9B%E7%B4%8D%E6%9C%9F%EF%BC%9A%0A%E4%BA%88%E7%AE%97%E6%84%9F%EF%BC%88%E4%BB%BB%E6%84%8F%EF%BC%89%EF%BC%9A%0A%E9%80%A3%E7%B5%A1%E6%89%8B%E6%AE%B5%EF%BC%9A" class="btn btn-primary contact-btn">
+          <i class="fas fa-envelope"></i> メールで相談する
+        </a>
+      </div>
+    </section>
+
+  </main>
+
+  <!-- ===== FOOTER ===== -->
+  <footer class="footer">
+    <p class="footer-message">AIネイティブ世代として、日本の生産性を上げるプロトタイプを作り続ける。</p>
+    <p class="footer-copy">&copy; 2026 山本 直哉</p>
+  </footer>
+
+  <script src="js/stars.js"></script>
+  <script src="js/main.js"></script>
+  <script src="js/chat.js"></script>
+</body>
+</html>

@@ -791,6 +791,14 @@ document.addEventListener('DOMContentLoaded', () => {
     document.addEventListener('keydown', bootstrapPlayback, { once: true, passive: true });
     document.addEventListener('touchstart', bootstrapPlayback, { once: true, passive: true });
 
+    // オープニングの入場ボタン押下時にも再生を再試行（ユーザー操作扱い）
+    const openingEnterButton = document.getElementById('openingEnter');
+    if (openingEnterButton) {
+      openingEnterButton.addEventListener('click', () => {
+        if (!isStoppedByUser) startBgm();
+      });
+    }
+
     bgmToggle.addEventListener('click', (event) => {
       event.preventDefault();
       if (!isPlaying) {

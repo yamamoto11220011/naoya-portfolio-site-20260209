@@ -540,31 +540,52 @@ document.addEventListener('DOMContentLoaded', () => {
   const bgmPlayer = document.getElementById('bgmPlayer');
 
   if (bgmToggle && bgmPlayerWrap && bgmPlayer) {
-    const bgmUrl = 'https://www.youtube.com/embed/jK2aIUmmdP4?autoplay=1&loop=1&playlist=jK2aIUmmdP4';
-    let isPlaying = true;
+    const bgmUrl = 'https://www.youtube.com/embed/jK2aIUmmdP4?start=0&autoplay=1&loop=1&playlist=jK2aIUmmdP4&playsinline=1';
+    let isPlaying = false;
     const bgmLabel = bgmToggle.querySelector('.link-label');
     const bgmArrow = bgmToggle.querySelector('.link-arrow');
 
-    // 読み込み時に背景再生（ブラウザ制限で自動再生が無効な場合あり）
+    function setBgmUiState(playing) {
+      bgmToggle.setAttribute('aria-expanded', playing ? 'true' : 'false');
+      if (bgmLabel) bgmLabel.textContent = t(playing ? 'bgm_stop' : 'bgm_play');
+      if (bgmArrow) bgmArrow.innerHTML = playing ? '<i class="fas fa-stop"></i>' : '<i class="fas fa-play"></i>';
+    }
+
+    function startBgm() {
+      bgmPlayer.src = bgmUrl;
+      isPlaying = true;
+      setBgmUiState(true);
+    }
+
+    function stopBgm() {
+      bgmPlayer.src = '';
+      isPlaying = false;
+      setBgmUiState(false);
+    }
+
+    // 背景再生用プレイヤーを常時ロード。自動再生はブラウザ仕様で失敗する場合あり。
     bgmPlayerWrap.hidden = false;
-    bgmPlayer.src = bgmUrl;
-    bgmToggle.setAttribute('aria-expanded', 'true');
-    if (bgmLabel) bgmLabel.textContent = t('bgm_stop');
-    if (bgmArrow) bgmArrow.innerHTML = '<i class="fas fa-stop"></i>';
+    startBgm();
+
+    // 自動再生がブロックされたケースを、最初のユーザー操作で確実に再試行
+    const bootstrapPlayback = () => {
+      if (isPlaying) {
+        bgmPlayer.src = '';
+      }
+      startBgm();
+      document.removeEventListener('pointerdown', bootstrapPlayback);
+      document.removeEventListener('keydown', bootstrapPlayback);
+      document.removeEventListener('touchstart', bootstrapPlayback);
+    };
+    document.addEventListener('pointerdown', bootstrapPlayback, { once: true, passive: true });
+    document.addEventListener('keydown', bootstrapPlayback, { once: true, passive: true });
+    document.addEventListener('touchstart', bootstrapPlayback, { once: true, passive: true });
 
     bgmToggle.addEventListener('click', () => {
       if (!isPlaying) {
-        bgmPlayer.src = bgmUrl;
-        bgmToggle.setAttribute('aria-expanded', 'true');
-        if (bgmLabel) bgmLabel.textContent = t('bgm_stop');
-        if (bgmArrow) bgmArrow.innerHTML = '<i class="fas fa-stop"></i>';
-        isPlaying = true;
+        startBgm();
       } else {
-        bgmPlayer.src = '';
-        bgmToggle.setAttribute('aria-expanded', 'false');
-        if (bgmLabel) bgmLabel.textContent = t('bgm_play');
-        if (bgmArrow) bgmArrow.innerHTML = '<i class="fas fa-play"></i>';
-        isPlaying = false;
+        stopBgm();
       }
     });
   }

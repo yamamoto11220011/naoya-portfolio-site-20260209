@@ -2,40 +2,30 @@
    Gemini 2.5 Flash Chat - Naoya AI Assistant
    ============================ */
 
-const GEMINI_MODEL = 'gemini-2.5-flash';
-const GEMINI_API_KEY_STORAGE_KEY = 'GEMINI_API_KEY';
-
-function getGeminiApiKey() {
-  return (window.localStorage.getItem(GEMINI_API_KEY_STORAGE_KEY) || '').trim();
-}
-
-function setGeminiApiKey(key) {
-  window.localStorage.setItem(GEMINI_API_KEY_STORAGE_KEY, key.trim());
-}
-
-function clearGeminiApiKey() {
-  window.localStorage.removeItem(GEMINI_API_KEY_STORAGE_KEY);
-}
-
-function getGeminiApiUrl(apiKey) {
-  return `https://generativelanguage.googleapis.com/v1beta/models/${GEMINI_MODEL}:generateContent?key=${encodeURIComponent(apiKey)}`;
-}
-
-function ensureGeminiApiKey() {
-  let apiKey = getGeminiApiKey();
-  if (apiKey) return apiKey;
-
-  const input = window.prompt('Gemini APIキーを入力してください（ブラウザ内保存）');
-  if (!input) {
-    throw new Error('APIキー未設定');
+const QA_KNOWLEDGE = [
+  {
+    question: '山本直哉とは？',
+    answer: '山本直哉は、東京生まれで中学まで東京で過ごし、高校から香川西高校の特待生として野球部に所属していました。',
+    keywords: ['山本直哉', '東京', '香川西高校', '特待生', '野球部']
+  },
+  {
+    question: '好きなyoutuberは？',
+    answer: '好きなYouTuberは、コスメティック田中です。',
+    keywords: ['youtuber', 'ユーチューバー', 'youtube', 'コスメティック田中']
+  },
+  {
+    question: '西村博之とはどんな関係ですか？',
+    answer: '西村博之さんとは、ZEN大学1期生としての同級生という関係です。',
+    keywords: ['西村博之', 'ひろゆき', '関係', 'zen大学', '同級生']
+  },
+  {
+    question: 'AGIは来ますか？',
+    answer: 'AGIについては「もう来てます」という認識です。',
+    keywords: ['agi', '来ますか', '人工汎用知能']
   }
-  apiKey = input.trim();
-  if (!apiKey) {
-    throw new Error('APIキー未設定');
-  }
-  setGeminiApiKey(apiKey);
-  return apiKey;
-}
+];
+
+const EMBEDDING_MIN_SCORE = 0.22;
 
 // ── 山本直哉の学習データ（システムプロンプト） ──
 const SYSTEM_PROMPT = `あなたは山本直哉（Naoya Yamamoto）の公式AIアシスタントです。
@@ -148,87 +138,30 @@ async function handleSend() {
   const typingEl = appendTyping();
 
   try {
-    const response = await callGemini(message);
+    const response = await callEmbeddingAssistant(message);
     typingEl.remove();
     appendMessage(response, 'ai');
   } catch (error) {
     typingEl.remove();
-    console.error('Gemini API Error:', error);
-    appendMessage('申し訳ございません。接続エラーが発生しました。しばらくしてからもう一度お試しください。\n\n(詳細: ' + error.message + ')', 'ai');
+    console.error('Embedding Search Error:', error);
+    appendMessage('申し訳ございません。回答エラーが発生しました。\n\n(詳細: ' + error.message + ')', 'ai');
   }
 
   chatSend.disabled = false;
   chatInput.focus();
 }
 
-// ── Gemini API呼び出し ──
-async function callGemini(userMessage) {
-  const apiKey = ensureGeminiApiKey();
-  const apiUrl = getGeminiApiUrl(apiKey);
-
+// ── 埋め込み（簡易ベクトル）ベース回答 ──
+async function callEmbeddingAssistant(userMessage) {
   // 履歴に追加
   chatHistory.push({
     role: 'user',
     parts: [{ text: userMessage }]
   });
-
-  // リクエストボディ構築（system_instruction を使用）
-  const requestBody = {
-    system_instruction: {
-      parts: [{ text: SYSTEM_PROMPT }]
-    },
-    contents: chatHistory,
-    generationConfig: {
-      temperature: 0.7,
-      topP: 0.9,
-      topK: 40,
-      maxOutputTokens: 512,
-    },
-    safetySettings: [
-      { category: 'HARM_CATEGORY_HARASSMENT', threshold: 'BLOCK_ONLY_HIGH' },
-      { category: 'HARM_CATEGORY_HATE_SPEECH', threshold: 'BLOCK_ONLY_HIGH' },
-      { category: 'HARM_CATEGORY_SEXUALLY_EXPLICIT', threshold: 'BLOCK_ONLY_HIGH' },
-      { category: 'HARM_CATEGORY_DANGEROUS_CONTENT', threshold: 'BLOCK_ONLY_HIGH' }
-    ]
-  };
-
-  const response = await fetch(apiUrl, {
-    method: 'POST',
-    headers: {
-      'Content-Type': 'application/json',
-    },
-    body: JSON.stringify(requestBody)
-  });
-
-  if (!response.ok) {
-    const errorText = await response.text().catch(() => '');
-    // 履歴からエラーになったメッセージを削除
-    chatHistory.pop();
-
-    if (response.status === 403 && errorText.includes('reported as leaked')) {
-      clearGeminiApiKey();
-      throw new Error('APIキーが無効化されています。新しいキーを入力して再試行してください。');
-    }
-
-    throw new Error(`HTTP ${response.status}: ${errorText.substring(0, 200)}`);
-  }
-
-  const data = await response.json();
-
-  // レスポンス取得
-  const aiText = data.candidates?.[0]?.content?.parts?.[0]?.text;
-
-  if (!aiText) {
-    // ブロックされた場合などの処理
-    const blockReason = data.candidates?.[0]?.finishReason;
-    const promptFeedback = data.promptFeedback?.blockReason;
-    chatHistory.pop();
-    
-    if (blockReason === 'SAFETY' || promptFeedback) {
-      return 'すみません、その質問には回答できませんでした。別の質問をお試しください。';
-    }
-    return 'すみません、回答を生成できませんでした。もう一度お試しください。';
-  }
+  const best = findBestKnowledge(userMessage);
+  const aiText = best && best.score >= EMBEDDING_MIN_SCORE
+    ? best.entry.answer
+    : 'その質問はデータにないため答えられません。山本直哉・好きなYouTuber・西村博之さんとの関係・AGIについて質問してください。';
 
   // 履歴に追加
   chatHistory.push({
@@ -242,6 +175,74 @@ async function callGemini(userMessage) {
   }
 
   return aiText;
+}
+
+function findBestKnowledge(query) {
+  const queryNorm = normalizeText(query);
+  const queryVec = toVector(queryNorm);
+  let best = null;
+
+  for (const entry of QA_KNOWLEDGE) {
+    const qNorm = normalizeText(entry.question);
+    const entryVec = toVector(qNorm);
+    let score = cosineSimilarity(queryVec, entryVec);
+
+    if (queryNorm.includes(qNorm) || qNorm.includes(queryNorm)) {
+      score += 0.35;
+    }
+
+    const keywordHits = entry.keywords.filter((k) => queryNorm.includes(normalizeText(k))).length;
+    score += Math.min(0.3, keywordHits * 0.1);
+
+    if (!best || score > best.score) {
+      best = { entry, score };
+    }
+  }
+
+  return best;
+}
+
+function normalizeText(text) {
+  return String(text || '')
+    .toLowerCase()
+    .replace(/[\s　]+/g, '')
+    .replace(/[?？!！。、「」『』（）()]/g, '');
+}
+
+function toVector(text) {
+  const vector = new Map();
+  const n = 2;
+  if (!text) return vector;
+  if (text.length <= n) {
+    vector.set(text, 1);
+    return vector;
+  }
+  for (let i = 0; i <= text.length - n; i += 1) {
+    const token = text.slice(i, i + n);
+    vector.set(token, (vector.get(token) || 0) + 1);
+  }
+  return vector;
+}
+
+function cosineSimilarity(a, b) {
+  let dot = 0;
+  let normA = 0;
+  let normB = 0;
+
+  for (const val of a.values()) {
+    normA += val * val;
+  }
+  for (const val of b.values()) {
+    normB += val * val;
+  }
+  for (const [token, valA] of a.entries()) {
+    if (b.has(token)) {
+      dot += valA * b.get(token);
+    }
+  }
+
+  if (!normA || !normB) return 0;
+  return dot / (Math.sqrt(normA) * Math.sqrt(normB));
 }
 
 // ── メッセージ追加 ──

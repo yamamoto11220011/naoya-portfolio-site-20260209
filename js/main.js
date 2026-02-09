@@ -14,7 +14,7 @@ document.addEventListener('DOMContentLoaded', () => {
       menu_contact: 'Contact',
       menu_cta: '相談する',
       opening_copy: 'この瞬間から、AIは道具ではなく、創造の神経になる。',
-      opening_enter: 'AGIの世界に入る',
+      opening_enter: '未来へ入る',
       splash_manifesto: '心が動く場所から、次のプロダクトが生まれる。',
       splash_sub: 'Artificial Intelligence changes everything.',
       splash_enter: 'ENTER',
@@ -417,9 +417,7 @@ document.addEventListener('DOMContentLoaded', () => {
   const openingCinematic = document.getElementById('openingCinematic');
   const openingEnter = document.getElementById('openingEnter');
   const homeSection = document.getElementById('hero');
-  const openingSeenKey = 'opening_seen_v2026_02_09';
   const OPENING_FORCE_HIDDEN_CLASS = 'is-force-hidden';
-  let openingTimer = null;
   let openingClosed = false;
 
   function hideOpeningElementImmediately() {
@@ -435,7 +433,6 @@ document.addEventListener('DOMContentLoaded', () => {
     if (openingClosed) return;
     openingClosed = true;
     document.body.classList.remove('is-opening');
-    localStorage.setItem(openingSeenKey, '1');
 
     if (!openingCinematic) return;
 
@@ -444,9 +441,11 @@ document.addEventListener('DOMContentLoaded', () => {
       return;
     }
 
+    openingCinematic.setAttribute('aria-hidden', 'true');
     openingCinematic.classList.add('is-leaving');
     window.setTimeout(() => {
       openingCinematic.hidden = true;
+      openingCinematic.classList.add(OPENING_FORCE_HIDDEN_CLASS);
     }, 950);
   }
 
@@ -463,42 +462,22 @@ document.addEventListener('DOMContentLoaded', () => {
     }
   }
 
-  function forceHideOpeningNow() {
-    hideOpeningElementImmediately();
-  }
-
   if (openingEnter) {
     openingEnter.addEventListener('click', (event) => {
       event.preventDefault();
       event.stopPropagation();
-      if (openingTimer) window.clearTimeout(openingTimer);
-      forceHideOpeningNow();
-      closeOpening(true);
+      closeOpening(prefersReducedMotion);
       moveToHomeSection();
     });
   }
 
   if (openingCinematic) {
-    const seenBefore = localStorage.getItem(openingSeenKey) === '1';
-    if (prefersReducedMotion || seenBefore) {
-      closeOpening(true);
-    } else {
-      openingCinematic.classList.add('is-intense');
-      openingTimer = window.setTimeout(() => closeOpening(false), 3000);
-      openingCinematic.addEventListener('click', (event) => {
-        if (event.target === openingCinematic) {
-          if (openingTimer) window.clearTimeout(openingTimer);
-          closeOpening(false);
-        }
-      });
-      document.addEventListener('keydown', (event) => {
-        if (openingClosed) return;
-        if (event.key === 'Enter' || event.key === ' ' || event.key === 'Escape') {
-          if (openingTimer) window.clearTimeout(openingTimer);
-          closeOpening(false);
-        }
-      });
-    }
+    openingCinematic.hidden = false;
+    openingCinematic.style.display = '';
+    openingCinematic.classList.remove(OPENING_FORCE_HIDDEN_CLASS, 'is-leaving');
+    openingCinematic.setAttribute('aria-hidden', 'false');
+    document.body.classList.add('is-opening');
+    if (!prefersReducedMotion) openingCinematic.classList.add('is-intense');
   } else {
     document.body.classList.remove('is-opening');
   }

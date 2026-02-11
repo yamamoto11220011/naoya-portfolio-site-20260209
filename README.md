@@ -58,7 +58,7 @@ images/hero-bg.jpg      (未使用・予備)
 - Vanilla JavaScript
 
 ## カスタマイズ箇所
-- **Gemini APIキー**: `js/chat.js` の `GEMINI_API_KEY`
+
 - **GitHub URL**: Links セクション内
 - **メールアドレス**: `naoya.ado1dem@gmail.com`
 - **プロフィール写真**: `images/naoya_avatar.jpg`

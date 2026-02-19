@@ -46,6 +46,6 @@ document.addEventListener('DOMContentLoaded', () => {
     });
   });
 
-  const initial = navLinks.find((link) => link.getAttribute('href') === (window.location.hash || '#agi')) || navLinks[0];
+  const initial = navLinks.find((link) => link.getAttribute('href') === (window.location.hash || '#chat')) || navLinks[0];
   if (initial) setActive(initial);
 });

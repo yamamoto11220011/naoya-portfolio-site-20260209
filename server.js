@@ -182,7 +182,10 @@ async function handleChatApi(req, res) {
     generationConfig: {
       temperature: 0.7,
       topP: 0.95,
-      maxOutputTokens: 360
+      maxOutputTokens: 1024,
+      thinkingConfig: {
+        thinkingBudget: 0
+      }
     }
   };
 

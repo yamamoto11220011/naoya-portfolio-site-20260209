@@ -1,162 +1,161 @@
 /* ============================
-   Gemini AGI Chat
+   Gemini Chat - Naoya AI Assistant
    ============================ */
 
-const CHAT_API_ENDPOINT = '/api/chat';
-const MAX_HISTORY_MESSAGES = 20;
-
+// ── チャット履歴 ──
 let chatHistory = [];
-let isSending = false;
 
+// ── DOM要素 ──
 const chatMessages = document.getElementById('chatMessages');
-const chatSuggestions = document.getElementById('chatSuggestions');
-const chatForm = document.getElementById('chatForm');
 const chatInput = document.getElementById('chatInput');
-const chatSend = document.getElementById('chatSend');
+const chatForm = document.getElementById('chatForm');
 
-if (chatSuggestions) {
-  chatSuggestions.querySelectorAll('.suggestion-chip').forEach((chip) => {
-    chip.addEventListener('click', () => {
-      if (isSending) return;
-      const query = chip.getAttribute('data-query') || chip.textContent.trim();
-      if (!query) return;
-      handleSend(query);
-    });
-  });
+let lastSendAt = 0;
+
+function triggerSend() {
+  const now = Date.now();
+  if (now - lastSendAt < 200) return;
+  lastSendAt = now;
+  handleSend(chatInput.value);
+  chatInput.value = '';
 }
 
-if (chatForm) {
+if (chatForm && chatInput) {
   chatForm.addEventListener('submit', (event) => {
     event.preventDefault();
-    if (!chatInput || isSending) return;
+    triggerSend();
+  });
 
-    const message = chatInput.value.trim();
-    if (!message) return;
+  chatInput.addEventListener('keydown', (event) => {
+    if (event.key === 'Enter' && !event.isComposing) {
+      event.preventDefault();
+      triggerSend();
+    }
+  });
 
-    chatInput.value = '';
-    handleSend(message);
+  chatInput.addEventListener('keyup', (event) => {
+    if (event.key === 'Enter' && !event.isComposing) {
+      event.preventDefault();
+      triggerSend();
+    }
   });
 }
 
-async function handleSend(message) {
-  const text = String(message || '').trim();
-  if (!text || !chatMessages) return;
+// ── 送信処理 ──
+async function handleSend(selectedMessage) {
+  const message = String(selectedMessage || '').trim();
+  if (!message) return;
 
-  appendMessage(text, 'user');
-  const typing = appendTyping();
-  setSendingState(true);
+  // ユーザーメッセージ追加
+  appendMessage(message, 'user');
+
+  // タイピングインジケーター表示
+  const typingEl = appendTyping();
 
   try {
-    const response = await callGemini(text);
-    typing.remove();
+    const response = await callGeminiAssistant(message);
+    typingEl.remove();
     appendMessage(response, 'ai');
-  } catch (error) {
-    typing.remove();
-    appendMessage(
-      [
-        'サーバー経由のGemini呼び出しに失敗しました。',
-        '',
-        `詳細: ${error.message}`
-      ].join('\n'),
-      'ai'
-    );
-  } finally {
-    setSendingState(false);
-  }
-}
 
-function setSendingState(sending) {
-  isSending = sending;
-  if (chatInput) chatInput.disabled = sending;
-  if (chatSend) chatSend.disabled = sending;
-  if (chatSuggestions) {
-    chatSuggestions.querySelectorAll('.suggestion-chip').forEach((chip) => {
-      chip.disabled = sending;
+    // 履歴に追加
+    chatHistory.push({
+      role: 'user',
+      parts: [{ text: message }]
     });
+    chatHistory.push({
+      role: 'model',
+      parts: [{ text: response }]
+    });
+
+    if (chatHistory.length > 20) {
+      chatHistory = chatHistory.slice(-20);
+    }
+  } catch (error) {
+    typingEl.remove();
+    console.error('Gemini Error:', error);
+    appendMessage('申し訳ございません。回答エラーが発生しました。\n\n(詳細: ' + error.message + ')', 'ai');
   }
 }
 
-async function callGemini(userMessage) {
-  const payload = {
-    message: userMessage,
-    history: chatHistory.slice(-MAX_HISTORY_MESSAGES)
-  };
-
-  const response = await fetch(CHAT_API_ENDPOINT, {
+// ── API呼び出し ──
+async function callGeminiAssistant(message) {
+  const response = await fetch('/api/chat', {
     method: 'POST',
     headers: { 'Content-Type': 'application/json' },
-    body: JSON.stringify(payload)
+    body: JSON.stringify({ message, history: chatHistory })
   });
 
-  let data = {};
-  try {
-    data = await response.json();
-  } catch (_) {
-    data = {};
-  }
-
   if (!response.ok) {
-    throw new Error(data?.error || data?.message || `HTTP ${response.status}`);
+    const err = await response.text();
+    throw new Error(err);
   }
 
-  const text = String(data?.text || '').trim();
-
-  if (!text) {
-    throw new Error('Geminiから回答テキストを取得できませんでした。');
-  }
-
-  chatHistory.push({ role: 'user', text: userMessage });
-  chatHistory.push({ role: 'model', text });
-  if (chatHistory.length > MAX_HISTORY_MESSAGES * 2) {
-    chatHistory = chatHistory.slice(-(MAX_HISTORY_MESSAGES * 2));
-  }
-
-  return text;
+  const data = await response.json();
+  return data?.text || '申し訳ございません。回答を生成できませんでした。';
 }
 
+// ── メッセージ追加 ──
 function appendMessage(text, sender) {
-  if (!chatMessages) return;
+  const msgEl = document.createElement('div');
+  msgEl.className = `chat-message ${sender === 'user' ? 'user-message' : 'ai-message'}`;
 
-  const msg = document.createElement('div');
-  msg.className = `chat-entry ${sender === 'user' ? 'user-message' : 'ai-message'}`;
+  if (sender === 'user') {
+    msgEl.innerHTML = `
+      <div class="chat-avatar-user">
+        <img src="images/naoya_avatar.jpg" alt="Naoya avatar" width="34" height="34">
+      </div>
+      <div class="chat-bubble">${escapeHTML(text)}</div>
+    `;
+  } else {
+    const htmlContent = renderMarkdown(text);
+    msgEl.innerHTML = `
+      <div class="chat-avatar-ai">
+        <img src="images/naoya_avatar.jpg" alt="Naoya avatar" width="34" height="34">
+      </div>
+      <div class="chat-bubble">${htmlContent}</div>
+    `;
+  }
 
-  const contentHtml = sender === 'user' ? escapeHTML(text) : renderMarkdown(text);
-
-  msg.innerHTML = `
-    <div class="chat-entry-text">${contentHtml}</div>
-  `;
-
-  chatMessages.appendChild(msg);
+  chatMessages.appendChild(msgEl);
   chatMessages.scrollTop = chatMessages.scrollHeight;
 }
 
+// ── タイピングインジケーター追加 ──
 function appendTyping() {
-  if (!chatMessages) return { remove: () => {} };
+  const msgEl = document.createElement('div');
+  msgEl.className = 'chat-message ai-message typing';
 
-  const msg = document.createElement('div');
-  msg.className = 'chat-entry ai-message typing';
-  msg.innerHTML = `
-    <div class="chat-entry-text">
-      <div class="typing-indicator"><span></span><span></span><span></span></div>
+  msgEl.innerHTML = `
+    <div class="chat-avatar-ai">
+      <img src="images/naoya_avatar.jpg" alt="Naoya avatar" width="34" height="34">
+    </div>
+    <div class="chat-bubble">
+      <div class="typing-indicator">
+        <span></span>
+        <span></span>
+        <span></span>
+      </div>
     </div>
   `;
 
-  chatMessages.appendChild(msg);
+  chatMessages.appendChild(msgEl);
   chatMessages.scrollTop = chatMessages.scrollHeight;
-  return msg;
+  return msgEl;
 }
 
+// ── Markdownレンダリング ──
 function renderMarkdown(text) {
   if (typeof marked !== 'undefined' && marked.parse) {
     try {
       return marked.parse(text);
-    } catch (_) {
+    } catch (e) {
       return simpleMarkdown(text);
     }
   }
   return simpleMarkdown(text);
 }
 
+// ── 簡易Markdownフォールバック ──
 function simpleMarkdown(text) {
   return text
     .replace(/&/g, '&amp;')
@@ -170,6 +169,7 @@ function simpleMarkdown(text) {
     .replace(/\n/g, '<br>');
 }
 
+// ── HTMLエスケープ ──
 function escapeHTML(str) {
   const div = document.createElement('div');
   div.textContent = str;
